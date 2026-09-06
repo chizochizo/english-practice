@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SpeakFlow — AI Language Tutor</title>
+  <title>SpeakFlow — Structured English Journey</title>
   <style>
     :root {
       --bg: #0b0f19;
@@ -15,6 +15,8 @@
       --border: #243248;
       --bubble-user: #312e81;
       --bubble-ai: #1e293b;
+      --success: #10b981;
+      --warning: #f59e0b;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     body { background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
@@ -24,28 +26,59 @@
     .header-controls { display: flex; align-items: center; gap: 12px; }
     select { background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 6px; padding: 6px 10px; font-size: 0.85rem; outline: none; }
     
-    nav.tabs { display: flex; background: #0f172a; border-bottom: 1px solid var(--border); padding: 0 16px; }
-    nav.tabs button { background: none; border: none; color: var(--text-muted); padding: 12px 16px; font-weight: 600; cursor: pointer; border-bottom: 2px solid transparent; font-size: 0.9rem; }
+    nav.tabs { display: flex; background: #0f172a; border-bottom: 1px solid var(--border); padding: 0 16px; overflow-x: auto; }
+    nav.tabs button { background: none; border: none; color: var(--text-muted); padding: 12px 16px; font-weight: 600; cursor: pointer; border-bottom: 2px solid transparent; font-size: 0.9rem; white-space: nowrap; }
     nav.tabs button.active { color: #818cf8; border-bottom-color: #818cf8; }
 
     .tab-view { flex: 1; display: none; overflow-y: auto; padding: 20px; flex-direction: column; }
     .tab-view.active { display: flex; }
 
-    .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; max-width: 900px; margin: 0 auto; width: 100%; }
-    .feature-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; cursor: pointer; transition: transform 0.15s, border-color 0.15s; }
-    .feature-card:hover { transform: translateY(-2px); border-color: var(--accent); }
-    .feature-card h3 { color: #e2e8f0; font-size: 1.1rem; margin-bottom: 6px; }
-    .feature-card p { color: var(--text-muted); font-size: 0.85rem; line-height: 1.4; }
+    /* Cards & Grids */
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; max-width: 960px; margin: 0 auto; width: 100%; }
+    .feature-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; justify-content: space-between; }
+    .feature-card h3 { color: #e2e8f0; font-size: 1.05rem; margin-bottom: 6px; }
+    .feature-card p { color: var(--text-muted); font-size: 0.85rem; line-height: 1.5; margin-bottom: 12px; }
+    .example-box { background: #0f172a; padding: 8px 12px; border-radius: 6px; border-left: 3px solid var(--accent); margin-bottom: 10px; font-size: 0.85rem; color: #cbd5e1; }
+    
+    .card-actions { display: flex; gap: 8px; margin-top: auto; }
+    .btn-sm { padding: 6px 12px; font-size: 0.8rem; border-radius: 6px; border: 1px solid var(--border); background: #1e293b; color: var(--text); cursor: pointer; }
+    .btn-sm:hover { background: var(--accent); }
 
+    /* Journey Dashboard */
+    .journey-container { max-width: 900px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 18px; }
+    .profile-banner { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+    .streak-badge { background: #1e1b4b; border: 1px solid #4f46e5; color: #a5b4fc; padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; }
+    
+    .mission-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+    .mission-item { display: flex; align-items: center; justify-content: space-between; background: #0f172a; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border); }
+
+    /* Chat Elements */
     .chat-container { flex: 1; display: flex; flex-direction: column; max-width: 900px; margin: 0 auto; width: 100%; height: 100%; }
-    .chat-messages { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding: 10px 0; }
-    .bubble { max-width: 75%; padding: 10px 14px; border-radius: 10px; font-size: 0.95rem; line-height: 1.4; }
+    .chat-messages { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; padding: 10px 0; min-height: 220px; }
+    .bubble { max-width: 80%; padding: 10px 14px; border-radius: 10px; font-size: 0.95rem; line-height: 1.4; }
     .bubble.user { align-self: flex-end; background: var(--bubble-user); }
     .bubble.ai { align-self: flex-start; background: var(--bubble-ai); }
 
-    .call-view { align-items: center; justify-content: center; text-align: center; gap: 24px; }
-    .avatar-ring { width: 140px; height: 140px; border-radius: 50%; background: #1e1b4b; border: 3px solid #6366f1; display: flex; align-items: center; justify-content: center; font-size: 3rem; margin: 0 auto; transition: all 0.3s ease; }
+    /* Hint Suggestion Chips */
+    .hints-wrapper { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+    .hint-chip { background: #1e1b4b; border: 1px dashed #6366f1; color: #c7d2fe; font-size: 0.8rem; padding: 5px 10px; border-radius: 16px; cursor: pointer; transition: background 0.15s; }
+    .hint-chip:hover { background: #312e81; color: #fff; }
+
+    /* AI Call */
+    .call-view { align-items: center; justify-content: center; text-align: center; gap: 18px; }
+    .avatar-ring { width: 130px; height: 130px; border-radius: 50%; background: #1e1b4b; border: 3px solid #6366f1; display: flex; align-items: center; justify-content: center; font-size: 3rem; margin: 0 auto; transition: all 0.3s ease; }
     .avatar-ring.active { transform: scale(1.08); box-shadow: 0 0 30px rgba(99, 102, 241, 0.6); }
+    .call-transcript { max-width: 600px; font-size: 1.1rem; line-height: 1.5; font-weight: 500; min-height: 50px; }
+
+    /* Custom Roleplay */
+    .custom-roleplay-box { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; max-width: 960px; margin: 0 auto 20px auto; width: 100%; display: flex; flex-direction: column; gap: 10px; }
+    .custom-roleplay-input { display: flex; gap: 10px; }
+
+    /* Clinic / Mistake Lab */
+    .clinic-section { max-width: 900px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 16px; }
+    .diagnostic-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+    .metric-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px; text-align: center; }
+    .metric-card span { font-size: 1.6rem; font-weight: 700; color: #818cf8; display: block; margin-top: 4px; }
 
     footer { background: var(--card); border-top: 1px solid var(--border); padding: 12px 20px; display: flex; gap: 10px; }
     input[type="text"] { flex: 1; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; outline: none; font-size: 0.95rem; }
@@ -60,63 +93,222 @@
     <div class="brand"><span>🎙️</span> SpeakFlow</div>
     <div class="header-controls">
       <label for="voiceSelect" style="font-size: 0.85rem; color: var(--text-muted);">Voice:</label>
-      <select id="voiceSelect"></select>
+      <select id="voiceSelect" onchange="saveVoicePreference()"></select>
     </div>
   </header>
 
   <nav class="tabs">
-    <button class="active" onclick="switchTab('tutor')">Free Chat</button>
-    <button onclick="switchTab('daily')">Daily Lesson & Word</button>
-    <button onclick="switchTab('roleplay')">Roleplays</button>
-    <button onclick="switchTab('call')">AI Call</button>
+    <button class="active" onclick="switchTab('journey')">🗺️ Learning Journey</button>
+    <button onclick="switchTab('daily')">📖 Daily Library</button>
+    <button onclick="switchTab('roleplay')">🎭 Roleplays</button>
+    <button onclick="switchTab('call')">📞 AI Call</button>
+    <button onclick="switchTab('clinic')">🩺 Mistake Lab &amp; Clinic</button>
   </nav>
 
-  <!-- TAB 1: Chat -->
-  <main id="tab-tutor" class="tab-view active">
-    <div class="chat-container">
-      <div id="tutorMessages" class="chat-messages">
-        <div class="bubble ai">Hello! I am your English conversational tutor. What would you like to talk about today?</div>
+  <!-- TAB 1: Progressive Learning Journey -->
+  <main id="tab-journey" class="tab-view active">
+    <div class="journey-container">
+      <div class="profile-banner">
+        <div>
+          <h2 style="font-size: 1.1rem; margin-bottom: 4px;">My Proficiency Track</h2>
+          <p style="color: var(--text-muted); font-size: 0.85rem;">Saved automatically for your profile.</p>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <select id="userLevelSelect" onchange="updateUserLevel()">
+            <option value="Beginner">Level: Beginner (A1-A2)</option>
+            <option value="Intermediate">Level: Intermediate (B1-B2)</option>
+            <option value="Advanced">Level: Advanced (C1-C2)</option>
+          </select>
+          <span class="streak-badge">🔥 Active Journey</span>
+        </div>
+      </div>
+
+      <div class="mission-card">
+        <h3 style="font-size: 0.95rem; color: #cbd5e1;">Today's Structured Missions</h3>
+        <div class="mission-item">
+          <div>
+            <strong>Daily Warmup Drill</strong>
+            <p style="font-size: 0.8rem; color: var(--text-muted);">Self introduction and routine description.</p>
+          </div>
+          <button class="btn-sm" onclick="startMission(1)">Start Drill</button>
+        </div>
+        <div class="mission-item">
+          <div>
+            <strong>Grammar &amp; Phrasing Lab</strong>
+            <p style="font-size: 0.8rem; color: var(--text-muted);">Fix 2 everyday tense slip-ups with instant feedback.</p>
+          </div>
+          <button class="btn-sm" onclick="startMission(2)">Start Lab</button>
+        </div>
+      </div>
+
+      <div class="mission-card" style="flex: 1;">
+        <h3 style="font-size: 0.95rem; color: #cbd5e1;">Interactive Mission Coach</h3>
+        <div id="journeyChatMessages" class="chat-messages">
+          <div class="bubble ai" id="journeyWelcome">Welcome! Choose a mission above or type below to practice your daily lesson.</div>
+        </div>
+        <!-- Hints Container for Journey/Roleplay -->
+        <div id="chatHintsContainer" class="hints-wrapper"></div>
       </div>
     </div>
   </main>
 
-  <!-- TAB 2: Daily Lesson & Word -->
+  <!-- TAB 2: Daily Library with Audio Examples -->
   <main id="tab-daily" class="tab-view">
     <div class="card-grid">
-      <div class="feature-card" onclick="startTopic('Word of the day: Resilient. Let\'s learn how to use it in conversation.')">
-        <h3>📖 Word of the Day: Resilient</h3>
-        <p>Meaning: Able to recover quickly from difficult conditions. Click to practice using it in sentences.</p>
+      <div class="feature-card">
+        <div>
+          <h3>📖 Word of the Day: Resilient</h3>
+          <p><strong>Pronunciation:</strong> /rɪˈzɪl.jənt/<br><strong>Meaning:</strong> Able to recover quickly from hardship or difficulty.</p>
+          <div class="example-box">
+            💬 <strong>Example:</strong> &quot;She stayed resilient through exam stress and finished top of her class.&quot;
+          </div>
+        </div>
+        <div class="card-actions">
+          <button class="btn-sm" onclick="speakRawText('Resilient. Pronounced ree-zill-yent. Example: She stayed resilient through exam stress and finished top of her class.')">🔊 Speak Word &amp; Example</button>
+          <button class="btn-sm" onclick="startLibraryLesson('Teach me how to use the word Resilient. Ask me a question where I must answer using Resilient.')">💬 Practice</button>
+        </div>
       </div>
-      <div class="feature-card" onclick="startTopic('Today\'s grammar micro-lesson: Common confusions between Since vs For.')">
-        <h3>✏️ Micro-Lesson: &quot;Since&quot; vs &quot;For&quot;</h3>
-        <p>Master time prepositions with interactive practice exercises.</p>
+
+      <div class="feature-card">
+        <div>
+          <h3>✏️ Micro-Lesson: &quot;Since&quot; vs &quot;For&quot;</h3>
+          <p><strong>Rule:</strong> <em>Since</em> marks a specific start point. <em>For</em> measures total duration.</p>
+          <div class="example-box">
+            💬 <strong>Example:</strong> &quot;I have lived here for 3 years (not since 3 years). I have lived here since 2023.&quot;
+          </div>
+        </div>
+        <div class="card-actions">
+          <button class="btn-sm" onclick="speakRawText('Use since for a starting point, like since 2023. Use for for duration, like for three years.')">🔊 Listen</button>
+          <button class="btn-sm" onclick="startLibraryLesson('Give me a quick 2-question quiz checking Since versus For.')">💬 Practice</button>
+        </div>
+      </div>
+
+      <div class="feature-card">
+        <div>
+          <h3>🗣️ Idiom: &quot;Bite the bullet&quot;</h3>
+          <p><strong>Meaning:</strong> Facing an unavoidable, tough situation with courage.</p>
+          <div class="example-box">
+            💬 <strong>Example:</strong> &quot;I was dreading the dentist appointment, but I just bit the bullet and went.&quot;
+          </div>
+        </div>
+        <div class="card-actions">
+          <button class="btn-sm" onclick="speakRawText('Bite the bullet. Example: I was dreading the appointment, but I just bit the bullet and went.')">🔊 Speak Idiom &amp; Example</button>
+          <button class="btn-sm" onclick="startLibraryLesson('Let us practice using the idiom bite the bullet in natural workplace talk.')">💬 Practice</button>
+        </div>
+      </div>
+
+      <div class="feature-card">
+        <div>
+          <h3>🎯 Common Mistake: &quot;Explain me&quot;</h3>
+          <p><strong>Rule:</strong> <em>Explain</em> requires the preposition <strong>to</strong> when naming the listener.</p>
+          <div class="example-box">
+            💬 <strong>Example:</strong> Say &quot;Can you explain this <strong>to me</strong>?&quot; (Never say &quot;Explain me this&quot;).
+          </div>
+        </div>
+        <div class="card-actions">
+          <button class="btn-sm" onclick="speakRawText('Never say explain me this. Always say: Can you explain this to me?')">🔊 Listen</button>
+          <button class="btn-sm" onclick="startLibraryLesson('Explain why the verb explain needs the word to, and give me a sentence to correct.')">💬 Practice</button>
+        </div>
       </div>
     </div>
   </main>
 
   <!-- TAB 3: Roleplays -->
   <main id="tab-roleplay" class="tab-view">
+    <div class="custom-roleplay-box">
+      <h3 style="font-size: 1.05rem; color: #cbd5e1;">🎭 Custom Scenario Builder</h3>
+      <p style="color: var(--text-muted); font-size: 0.85rem;">Type any custom scene you want to practice with suggestions enabled.</p>
+      <div class="custom-roleplay-input">
+        <input type="text" id="customRoleplayInput" placeholder="e.g. You are a tech interviewer asking about my project..." />
+        <button class="btn" onclick="startCustomScenario()">Launch</button>
+      </div>
+    </div>
+
     <div class="card-grid">
-      <div class="feature-card" onclick="startRoleplay('Roleplay: You are a barista at a coffee shop and I am a customer ordering coffee and snacks.')">
+      <div class="feature-card" onclick="startRoleplay('Barista at a busy coffee shop. Take customer order. Keep replies spoken only, under 2 sentences.')">
         <h3>☕ Coffee Shop Order</h3>
-        <p>Order food, ask about drink sizes, and customize ingredients.</p>
+        <p>Order drinks, inquire about ingredients, and customize sizes.</p>
       </div>
-      <div class="feature-card" onclick="startRoleplay('Roleplay: You are an interviewer conducting a job interview for a software developer role.')">
-        <h3>💼 Job Interview</h3>
-        <p>Practice answering common behavioral and technical screening questions.</p>
+      <div class="feature-card" onclick="startRoleplay('Technical recruiter screening a software developer. Ask direct questions.')">
+        <h3>💼 Tech Interview</h3>
+        <p>Answer behavioral questions and present your past experience.</p>
       </div>
-      <div class="feature-card" onclick="startRoleplay('Roleplay: You are a border control immigration officer asking travelers questions at the airport.')">
+      <div class="feature-card" onclick="startRoleplay('Border control immigration officer at an international airport.')">
         <h3>✈️ Airport Immigration</h3>
-        <p>Explain your travel plans, accommodations, and itinerary clearly.</p>
+        <p>Explain trip duration, accommodation details, and purpose of visit.</p>
+      </div>
+      <div class="feature-card" onclick="startRoleplay('Hotel receptionist at front desk. Check in late guest.')">
+        <h3>🏨 Hotel Check-In</h3>
+        <p>Check in, request room upgrades, and ask about breakfast hours.</p>
       </div>
     </div>
   </main>
 
-  <!-- TAB 4: AI Call Mode -->
+  <!-- TAB 4: Dedicated AI Call with Hints -->
   <main id="tab-call" class="tab-view call-view">
-    <div id="callAvatar" class="avatar-ring">🤖</div>
-    <h2 id="callStatus">Tap start to begin your voice call</h2>
+    <div id="callAvatar" class="avatar-ring">📞</div>
+    <div id="callStatus" class="call-transcript">Tap "Start Call" to talk freely with your AI friend.</div>
+    
+    <!-- What to say next hints in Call Mode -->
+    <div id="callHintsWrapper" style="display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; max-width: 500px;">
+      <span style="font-size: 0.8rem; color: var(--text-muted);">💡 Suggestions (click or speak):</span>
+      <div id="callHintsContainer" class="hints-wrapper" style="justify-content: center;"></div>
+    </div>
+
     <button id="callToggleBtn" class="btn" style="padding: 12px 28px; font-size: 1rem;" onclick="toggleCallMode()">📞 Start Call</button>
+  </main>
+
+  <!-- TAB 5: Speech Clinic & Mistake Lab -->
+  <main id="tab-clinic" class="tab-view">
+    <div class="clinic-section">
+      <div class="profile-banner">
+        <div>
+          <h2 style="font-size: 1.1rem; margin-bottom: 4px;">Speech Clinic &amp; Diagnostic Lab</h2>
+          <p style="color: var(--text-muted); font-size: 0.85rem;">Live analysis of your filler words, repetitive phrasing, and syntax slips.</p>
+        </div>
+        <button class="btn-sm" onclick="resetClinicStats()">Reset Counters</button>
+      </div>
+
+      <div class="diagnostic-grid">
+        <div class="metric-card">
+          <p style="color: var(--text-muted); font-size: 0.85rem;">Filler Words Detected</p>
+          <span id="fillerCount">0</span>
+        </div>
+        <div class="metric-card">
+          <p style="color: var(--text-muted); font-size: 0.85rem;">Grammar Corrections</p>
+          <span id="grammarSlipCount">0</span>
+        </div>
+        <div class="metric-card">
+          <p style="color: var(--text-muted); font-size: 0.85rem;">Repetitions Identified</p>
+          <span id="repeatCount">0</span>
+        </div>
+      </div>
+
+      <div class="mission-card">
+        <h3 style="font-size: 0.95rem; color: #cbd5e1;">🔬 Recent Mistake Log</h3>
+        <div id="mistakeLogList" style="display: flex; flex-direction: column; gap: 8px; font-size: 0.85rem;">
+          <p style="color: var(--text-muted);">No mistakes logged yet. Practice in Journey, Roleplay, or Call to see live diagnostics here!</p>
+        </div>
+      </div>
+
+      <div class="mission-card">
+        <h3 style="font-size: 0.95rem; color: #cbd5e1;">🛠️ Targeted Clinic Drills</h3>
+        <div class="mission-item">
+          <div>
+            <strong>Filler Word Eliminator Drill</strong>
+            <p style="font-size: 0.8rem; color: var(--text-muted);">Practice answering without using &quot;um&quot;, &quot;uh&quot;, &quot;like&quot;, or &quot;actually&quot;.</p>
+          </div>
+          <button class="btn-sm" onclick="startClinicDrill('filler')">Start Drill</button>
+        </div>
+        <div class="mission-item">
+          <div>
+            <strong>Sentence Variety &amp; Repetition Drill</strong>
+            <p style="font-size: 0.8rem; color: var(--text-muted);">Expand your vocabulary and stop repeating the same starting words.</p>
+          </div>
+          <button class="btn-sm" onclick="startClinicDrill('variety')">Start Drill</button>
+        </div>
+      </div>
+    </div>
   </main>
 
   <!-- Universal Chat Bar -->
@@ -128,82 +320,294 @@
 
   <script>
     const BACKEND_URL = "https://speakflow-proxy.chizovechikho.workers.dev";
-    let activeSystemPrompt = "You are a friendly English conversation tutor. Reply concisely in 1-2 punchy spoken sentences. Gently correct mistakes.";
+    
+    // --- 1. Persistent Level State ---
+    let userLevel = localStorage.getItem("speakflow_level") || "Beginner";
+    document.getElementById("userLevelSelect").value = userLevel;
 
-    let conversation = [
-      { sender: "AI", text: "Hello! I am your English conversational tutor. What would you like to talk about today?" }
-    ];
+    function updateUserLevel() {
+      userLevel = document.getElementById("userLevelSelect").value;
+      localStorage.setItem("speakflow_level", userLevel);
+      resetJourneyPrompts();
+    }
 
+    // --- 2. Guaranteed Voice Persistence ---
     const voiceSelect = document.getElementById("voiceSelect");
     let availableVoices = [];
 
     function loadVoices() {
       availableVoices = window.speechSynthesis.getVoices().filter(v => v.lang.startsWith("en"));
       voiceSelect.innerHTML = "";
+      
+      const savedVoiceURI = localStorage.getItem("speakflow_voice_uri");
+      let matchedIndex = -1;
+
       availableVoices.forEach((voice, index) => {
         const opt = document.createElement("option");
         opt.value = index;
+        opt.dataset.uri = voice.voiceURI;
         opt.textContent = `${voice.name} (${voice.lang})`;
-        if (voice.name.includes("Natural") || voice.name.includes("Google") || voice.default) opt.selected = true;
+        
+        if (savedVoiceURI && voice.voiceURI === savedVoiceURI) {
+          matchedIndex = index;
+        } else if (!savedVoiceURI && (voice.name.includes("Natural") || voice.name.includes("Google") || voice.default)) {
+          matchedIndex = index;
+        }
         voiceSelect.appendChild(opt);
       });
+
+      if (matchedIndex >= 0) voiceSelect.selectedIndex = matchedIndex;
     }
+
+    function saveVoicePreference() {
+      const selectedOption = voiceSelect.options[voiceSelect.selectedIndex];
+      if (selectedOption && selectedOption.dataset.uri) {
+        localStorage.setItem("speakflow_voice_uri", selectedOption.dataset.uri);
+      }
+    }
+
     loadVoices();
     if (speechSynthesis.onvoiceschanged !== undefined) speechSynthesis.onvoiceschanged = loadVoices;
+
+    function cleanSpokenDialogue(text) {
+      return text
+        .replace(/\([^)]*\)/g, '')
+        .replace(/\[[^\]]*\]/g, '')
+        .replace(/\*[^*]*\*/g, '')
+        .replace(/^"(.*)"$/, '$1')
+        .trim();
+    }
 
     function speakText(text, onComplete) {
       if (!("speechSynthesis" in window)) return;
       window.speechSynthesis.cancel();
-      const utt = new SpeechSynthesisUtterance(text);
-      const selectedIndex = parseInt(voiceSelect.value, 10);
-      if (availableVoices[selectedIndex]) utt.voice = availableVoices[selectedIndex];
+      
+      const cleaned = cleanSpokenDialogue(text);
+      const utt = new SpeechSynthesisUtterance(cleaned);
+      
+      const savedURI = localStorage.getItem("speakflow_voice_uri");
+      let voiceToUse = availableVoices.find(v => v.voiceURI === savedURI);
+      if (!voiceToUse && availableVoices[voiceSelect.selectedIndex]) {
+        voiceToUse = availableVoices[voiceSelect.selectedIndex];
+      }
+      if (voiceToUse) utt.voice = voiceToUse;
+
       utt.onend = () => { if (onComplete) onComplete(); };
       window.speechSynthesis.speak(utt);
     }
 
+    function speakRawText(text) {
+      speakText(text, null);
+    }
+
+    // --- 3. Mistake Lab & Speech Clinic Tracker ---
+    let clinicStats = JSON.parse(localStorage.getItem("speakflow_clinic")) || { fillers: 0, grammar: 0, repeats: 0, logs: [] };
+
+    function updateClinicDisplay() {
+      document.getElementById("fillerCount").textContent = clinicStats.fillers;
+      document.getElementById("grammarSlipCount").textContent = clinicStats.grammar;
+      document.getElementById("repeatCount").textContent = clinicStats.repeats;
+
+      const logBox = document.getElementById("mistakeLogList");
+      if (clinicStats.logs.length === 0) {
+        logBox.innerHTML = '<p style="color: var(--text-muted);">No mistakes logged yet. Practice to see real-time diagnostics!</p>';
+      } else {
+        logBox.innerHTML = clinicStats.logs.slice(-5).reverse().map(item => `
+          <div style="background: #0f172a; padding: 8px 12px; border-radius: 6px; border-left: 3px solid #f59e0b;">
+            <strong>${item.type}:</strong> "${item.snippet}" <br>
+            <span style="color: #94a3b8; font-size: 0.8rem;">💡 Advice: ${item.tip}</span>
+          </div>
+        `).join("");
+      }
+    }
+
+    function logMistake(type, snippet, tip) {
+      clinicStats.logs.push({ type, snippet, tip, date: new Date().toLocaleTimeString() });
+      localStorage.setItem("speakflow_clinic", JSON.stringify(clinicStats));
+      updateClinicDisplay();
+    }
+
+    function resetClinicStats() {
+      clinicStats = { fillers: 0, grammar: 0, repeats: 0, logs: [] };
+      localStorage.setItem("speakflow_clinic", JSON.stringify(clinicStats));
+      updateClinicDisplay();
+    }
+
+    function analyzeUserInput(text) {
+      const lower = text.toLowerCase();
+      // Check fillers
+      const fillerMatches = lower.match(/\b(um|uh|like|you know|actually|basically)\b/g);
+      if (fillerMatches) {
+        clinicStats.fillers += fillerMatches.length;
+        logMistake("Filler Word", fillerMatches.join(", "), "Pause silently instead of using filler sounds to sound confident.");
+      }
+
+      // Check common repetitions
+      const words = lower.split(/\s+/);
+      for (let i = 0; i < words.length - 1; i++) {
+        if (words[i] === words[i + 1] && words[i].length > 2) {
+          clinicStats.repeats += 1;
+          logMistake("Word Repetition", `${words[i]} ${words[i]}`, "Take a breath before completing your phrase.");
+          break;
+        }
+      }
+
+      // Check specific common grammar slips
+      if (lower.includes("explain me")) {
+        clinicStats.grammar += 1;
+        logMistake("Grammar Slip", "explain me", "Say 'explain to me' instead.");
+      } else if (lower.includes("since 2 years") || lower.includes("since two years")) {
+        clinicStats.grammar += 1;
+        logMistake("Tense / Preposition Slip", "since 2 years", "Use 'for 2 years' when referring to duration.");
+      }
+
+      localStorage.setItem("speakflow_clinic", JSON.stringify(clinicStats));
+      updateClinicDisplay();
+    }
+
+    updateClinicDisplay();
+
+    // --- 4. Dynamic Hint Suggestions ---
+    function renderHints(targetContainerId, hints, onSelectHandler) {
+      const container = document.getElementById(targetContainerId);
+      container.innerHTML = "";
+      hints.forEach(hint => {
+        const chip = document.createElement("button");
+        chip.className = "hint-chip";
+        chip.textContent = `💡 "${hint}"`;
+        chip.onclick = () => onSelectHandler(hint);
+        container.appendChild(chip);
+      });
+    }
+
+    function generateContextualHints(aiReply) {
+      const lower = aiReply.toLowerCase();
+      if (lower.includes("coffee") || lower.includes("latte") || lower.includes("order")) {
+        return ["I'd like a medium iced latte with oat milk.", "Could you make that decaf, please?", "How much does that come to?"];
+      }
+      if (lower.includes("day") || lower.includes("how are you")) {
+        return ["Pretty good! Just finished up some work.", "A bit busy today, how about yours?", "Not bad! What have you been up to?"];
+      }
+      if (lower.includes("topic") || lower.includes("discuss") || lower.includes("decide")) {
+        return ["Let's talk about movies or favorite shows.", "Tell me about a great travel trip.", "You choose a fun question for me!"];
+      }
+      return ["Could you explain what you mean?", "That's interesting, tell me more.", "I agree with you!"];
+    }
+
+    // --- 5. Tabs & System Prompts ---
+    let activeTab = "journey";
+    let journeyMessages = [
+      { sender: "AI", text: `Welcome! I am your ${userLevel}-level English journey mentor. Let's tackle today's target mission together.` }
+    ];
+    let journeyPrompt = `You are a dedicated English mentor teaching a ${userLevel} student. Guide them through structured daily drills. Keep replies under 2 punchy spoken sentences. Gently correct syntax errors. Never include actions in brackets or asterisks.`;
+
+    let callHistory = [];
+    const CALL_PROMPT = "You are an easygoing friend chatting on a phone call. Converse casually in 1-2 spoken sentences. NEVER output narrative notes or actions in parentheses. If the user asks you to pick a topic, suggest something fun and everyday.";
+
+    function resetJourneyPrompts() {
+      journeyPrompt = `You are a dedicated English mentor teaching a ${userLevel} student. Guide them through structured daily drills. Keep replies under 2 punchy spoken sentences. Gently correct syntax errors. Never include actions in brackets or asterisks.`;
+      const greeting = `Switched track to ${userLevel}! Ready when you are.`;
+      appendJourneyMessage("AI", greeting);
+      journeyMessages.push({ sender: "AI", text: greeting });
+      speakText(greeting);
+    }
+
     function switchTab(tabId) {
+      activeTab = tabId;
       document.querySelectorAll(".tabs button").forEach(b => b.classList.remove("active"));
       event.target.classList.add("active");
       document.querySelectorAll(".tab-view").forEach(v => v.classList.remove("active"));
       document.getElementById(`tab-${tabId}`).classList.add("active");
-      document.getElementById("chatFooter").style.display = (tabId === "call") ? "none" : "flex";
+      document.getElementById("chatFooter").style.display = (tabId === "call" || tabId === "clinic") ? "none" : "flex";
+
+      if (tabId !== "call" && inCall) toggleCallMode();
     }
 
-    function appendMessage(sender, text) {
-      const box = document.getElementById("tutorMessages");
+    function appendJourneyMessage(sender, text) {
+      const box = document.getElementById("journeyChatMessages");
       const bubble = document.createElement("div");
       bubble.className = `bubble ${sender === "You" ? "user" : "ai"}`;
-      bubble.textContent = text;
+      bubble.textContent = cleanSpokenDialogue(text);
       box.appendChild(bubble);
       box.scrollTop = box.scrollHeight;
     }
 
-    async function sendChat(messageText) {
-      if (!messageText) return;
-      appendMessage("You", messageText);
-      conversation.push({ sender: "You", text: messageText });
+    async function sendJourneyMessage(text) {
+      if (!text) return;
+      analyzeUserInput(text);
+      appendJourneyMessage("You", text);
+      journeyMessages.push({ sender: "You", text });
 
       try {
         const res = await fetch(BACKEND_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ system_prompt: activeSystemPrompt, messages: conversation })
+          body: JSON.stringify({ system_prompt: journeyPrompt, messages: journeyMessages })
         });
         const data = await res.json();
-        const reply = data.reply || data.error || "Could not process request.";
-        appendMessage("AI", reply);
-        conversation.push({ sender: "AI", text: reply });
+        const reply = cleanSpokenDialogue(data.reply || data.error || "Could not process request.");
+        appendJourneyMessage("AI", reply);
+        journeyMessages.push({ sender: "AI", text: reply });
+
+        // Generate and display contextual hints
+        const hints = generateContextualHints(reply);
+        renderHints("chatHintsContainer", hints, (chosenHint) => {
+          document.getElementById("userInput").value = chosenHint;
+          sendJourneyMessage(chosenHint);
+        });
+
         speakText(reply);
-      } catch (err) {
-        appendMessage("AI", "Network error connecting to proxy.");
+      } catch {
+        appendJourneyMessage("AI", "Network error connecting to proxy.");
       }
     }
 
+    function startMission(id) {
+      const missionPrompt = id === 1
+        ? `Let's begin Mission 1: Self routine for a ${userLevel} speaker. Tell me about what you did this morning.`
+        : `Let's start Mission 2: Grammar precision. Give me one sentence describing your goals this week and I will check your tenses.`;
+      appendJourneyMessage("AI", missionPrompt);
+      journeyMessages.push({ sender: "AI", text: missionPrompt });
+      speakText(missionPrompt);
+    }
+
+    function startLibraryLesson(text) {
+      switchTab("journey");
+      document.querySelector(".tabs button:first-child").click();
+      sendJourneyMessage(text);
+    }
+
+    function startRoleplay(prompt) {
+      switchTab("journey");
+      journeyPrompt = prompt + " Spoken dialogue only, no brackets.";
+      journeyMessages = [];
+      document.getElementById("journeyChatMessages").innerHTML = "";
+      sendJourneyMessage("Hi! Let's begin the scenario.");
+    }
+
+    function startCustomScenario() {
+      const val = document.getElementById("customRoleplayInput").value.trim();
+      if (!val) return;
+      document.getElementById("customRoleplayInput").value = "";
+      startRoleplay(`Roleplay scenario: ${val}. Spoken direct dialogue only, no brackets.`);
+    }
+
+    function startClinicDrill(type) {
+      switchTab("journey");
+      document.querySelector(".tabs button:first-child").click();
+      if (type === "filler") {
+        sendJourneyMessage("Let's do the Filler Word Eliminator Drill. Ask me a 1-sentence opinion question and critique if I use fillers.");
+      } else {
+        sendJourneyMessage("Let's do the Sentence Variety Drill. Challenge me to describe my favorite hobby using 3 distinct descriptive adjectives.");
+      }
+    }
+
+    // --- Footer Input & Send Binding ---
     document.getElementById("sendBtn").addEventListener("click", () => {
       const val = document.getElementById("userInput").value.trim();
       if (val) {
         document.getElementById("userInput").value = "";
-        sendChat(val);
+        sendJourneyMessage(val);
       }
     });
 
@@ -212,23 +616,10 @@
         const val = e.target.value.trim();
         if (val) {
           e.target.value = "";
-          sendChat(val);
+          sendJourneyMessage(val);
         }
       }
     });
-
-    function startRoleplay(prompt) {
-      activeSystemPrompt = prompt;
-      conversation = [];
-      document.getElementById("tutorMessages").innerHTML = "";
-      document.querySelector(".tabs button:first-child").click();
-      sendChat("Hi, let's start the roleplay!");
-    }
-
-    function startTopic(text) {
-      document.querySelector(".tabs button:first-child").click();
-      sendChat(text);
-    }
 
     // --- Speech Recognition ---
     const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -243,11 +634,10 @@
       rec.onresult = (e) => {
         const transcript = e.results[0][0].transcript;
         if (inCall) {
-          document.getElementById("callStatus").textContent = `You: "${transcript}"`;
           handleCallExchange(transcript);
         } else {
           document.getElementById("userInput").value = transcript;
-          sendChat(transcript);
+          sendJourneyMessage(transcript);
         }
       };
 
@@ -264,46 +654,75 @@
       });
     }
 
+    // --- Dedicated Free-Talk Phone Call Tab with Hints ---
     function toggleCallMode() {
       inCall = !inCall;
       const btn = document.getElementById("callToggleBtn");
       const ring = document.getElementById("callAvatar");
+      const statusText = document.getElementById("callStatus");
+
       if (inCall) {
         btn.textContent = "End Call";
         btn.style.background = "#dc2626";
         ring.classList.add("active");
-        document.getElementById("callStatus").textContent = "Listening to you...";
-        rec && rec.start();
+        
+        const initialGreeting = "Hey! It's me. How are you doing today?";
+        callHistory = [{ sender: "AI", text: initialGreeting }];
+        statusText.textContent = initialGreeting;
+
+        // Render starter call hints
+        renderHints("callHintsContainer", ["I'm doing well! How about you?", "Pretty busy day, tell me something interesting.", "Let's talk about movies!"], (hint) => {
+          handleCallExchange(hint);
+        });
+
+        speakText(initialGreeting, () => {
+          if (inCall && rec) {
+            statusText.textContent = "Listening to you...";
+            rec.start();
+          }
+        });
       } else {
         btn.textContent = "📞 Start Call";
         btn.style.background = "var(--accent)";
         ring.classList.remove("active");
-        document.getElementById("callStatus").textContent = "Call ended.";
+        statusText.textContent = "Call ended.";
+        document.getElementById("callHintsContainer").innerHTML = "";
         window.speechSynthesis.cancel();
       }
     }
 
     async function handleCallExchange(spokenText) {
-      conversation.push({ sender: "You", text: spokenText });
-      document.getElementById("callStatus").textContent = "Thinking...";
+      analyzeUserInput(spokenText);
+      callHistory.push({ sender: "You", text: spokenText });
+      const statusText = document.getElementById("callStatus");
+      statusText.textContent = "Thinking...";
+
       try {
         const res = await fetch(BACKEND_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ system_prompt: activeSystemPrompt, messages: conversation })
+          body: JSON.stringify({ system_prompt: CALL_PROMPT, messages: callHistory })
         });
         const data = await res.json();
-        const reply = data.reply || "Could you repeat that?";
-        conversation.push({ sender: "AI", text: reply });
-        document.getElementById("callStatus").textContent = reply;
+        const reply = cleanSpokenDialogue(data.reply || "Could you say that once more?");
+        
+        callHistory.push({ sender: "AI", text: reply });
+        statusText.textContent = reply;
+
+        // Update call hint suggestions
+        const hints = generateContextualHints(reply);
+        renderHints("callHintsContainer", hints, (hint) => {
+          handleCallExchange(hint);
+        });
+
         speakText(reply, () => {
           if (inCall && rec) {
-            document.getElementById("callStatus").textContent = "Listening...";
+            statusText.textContent = "Listening...";
             rec.start();
           }
         });
       } catch {
-        document.getElementById("callStatus").textContent = "Call connection error.";
+        statusText.textContent = "Call connection error.";
       }
     }
   </script>
