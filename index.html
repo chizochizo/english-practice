@@ -1,603 +1,373 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SpeakFlow - English Mastery</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-slate-950 text-slate-100 min-h-screen font-sans flex flex-col items-center p-4">
-
-  <!-- Header -->
-  <header class="w-full max-w-2xl flex items-center justify-between py-4 border-b border-slate-800">
-    <div>
-      <h1 class="text-xl font-bold text-indigo-400">SpeakFlow</h1>
-      <p class="text-xs text-slate-400">Zero-cost native conversational studio</p>
-    </div>
-    <select id="levelSelect" onchange="updateLevelContent()" class="bg-slate-900 border border-slate-700 text-xs rounded-lg px-3 py-1.5 focus:outline-none focus:border-indigo-500">
-      <option value="Beginner">Beginner (A1-A2)</option>
-      <option value="Intermediate" selected>Intermediate (B1-B2)</option>
-      <option value="Advanced">Advanced (C1-C2)</option>
-    </select>
-  </header>
-
-  <!-- Navigation Tabs -->
-  <nav class="w-full max-w-2xl flex gap-2 mt-4">
-    <button onclick="switchTab('missions')" id="tab-missions" class="flex-1 py-2 text-xs md:text-sm font-semibold rounded-lg bg-indigo-600 text-white transition">Daily Missions</button>
-    <button onclick="switchTab('call')" id="tab-call" class="flex-1 py-2 text-xs md:text-sm font-semibold rounded-lg bg-slate-900 text-slate-400 hover:text-white transition">Call AI (Friend)</button>
-    <button onclick="switchTab('roleplay')" id="tab-roleplay" class="flex-1 py-2 text-xs md:text-sm font-semibold rounded-lg bg-slate-900 text-slate-400 hover:text-white transition">Role-Play Studio</button>
-  </nav>
-
-  <!-- Main Container -->
-  <main class="w-full max-w-2xl mt-6 flex-1 pb-10">
-
-    <!-- 1. DAILY MISSIONS TAB -->
-    <section id="view-missions" class="space-y-4">
-      <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
-        <div class="flex items-center justify-between">
-          <span class="text-xs font-bold text-indigo-400 uppercase tracking-wider">Word of the Day</span>
-          <span id="levelBadge" class="text-[10px] bg-indigo-900/60 text-indigo-300 px-2 py-0.5 rounded-full border border-indigo-700/50">Intermediate</span>
-        </div>
-        <div class="flex items-center justify-between mt-1">
-          <h2 class="text-lg font-bold" id="wordTitle">Resilient</h2>
-          <button onclick="speakText(document.getElementById('wordTitle').innerText)" class="text-xs bg-slate-800 hover:bg-slate-700 px-2.5 py-1 rounded-md text-slate-300">🔊 Listen</button>
-        </div>
-        <p class="text-xs text-slate-400 mt-1" id="wordDef">Able to withstand or recover quickly from difficult conditions.</p>
-        <p class="text-xs text-slate-500 italic mt-2" id="wordExample">"Local businesses remained resilient during the economic downturn."</p>
-      </div>
-
-      <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
-        <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider">Daily Speaking Challenge</span>
-        <p class="text-sm font-medium mt-1" id="missionPrompt">Describe one challenge you faced this week and how you resolved it. Speak at your own pace.</p>
-        
-        <div class="mt-4 flex items-center gap-3">
-          <button id="missionMicBtn" onclick="toggleMissionRecording()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-4 py-2 rounded-lg transition flex items-center gap-2">
-            <span id="missionMicStatus">🎙️ Start Speaking</span>
-          </button>
-        </div>
-        
-        <div class="mt-3 p-3 bg-slate-950 border border-slate-800 rounded-lg text-xs text-slate-300 min-h-[50px]" id="missionTranscript">
-          Click the mic and speak aloud whenever you're ready... Take your time.
-        </div>
-
-        <div id="missionFeedback" class="hidden mt-3 p-3 bg-indigo-950/40 border border-indigo-900/50 rounded-lg">
-          <p class="text-xs font-semibold text-indigo-300">Grammar & Fluency Check:</p>
-          <p class="text-xs text-slate-300 mt-1" id="missionFeedbackText"></p>
-        </div>
-      </div>
-    </section>
-
-    <!-- 2. CALL AI TAB (CASUAL FRIEND) -->
-    <section id="view-call" class="hidden flex flex-col items-center justify-center text-center py-4">
-      <div class="relative flex items-center justify-center">
-        <div id="callPulse" class="absolute w-28 h-28 rounded-full bg-indigo-500/20 animate-ping hidden"></div>
-        <div class="w-20 h-20 rounded-full bg-slate-900 border-2 border-indigo-500 flex items-center justify-center text-3xl shadow-lg">
-          🤖
-        </div>
-      </div>
-      
-      <h3 class="text-base font-bold mt-3">Alex (Speaking Partner)</h3>
-      <p class="text-xs text-slate-400 mt-1" id="callStatus">Tap "Start Call" to begin speaking</p>
-
-      <div id="callLogs" class="w-full mt-4 bg-slate-900 border border-slate-800 rounded-xl p-4 text-left min-h-[160px] max-h-60 overflow-y-auto space-y-3 text-xs">
-        <p id="callPlaceholder" class="text-slate-500 italic text-center py-6">Conversation transcript appears here during the active call.</p>
-      </div>
-
-      <div class="mt-5 flex items-center gap-4">
-        <button id="callToggleBtn" onclick="toggleFriendCall()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm px-6 py-2.5 rounded-full shadow-lg transition">
-          📞 Start Call
-        </button>
-      </div>
-    </section>
-
-    <!-- 3. ROLE-PLAY STUDIO (INDEPENDENT WINDOW) -->
-    <section id="view-roleplay" class="hidden space-y-6">
-
-      <!-- Active Roleplay Session Window -->
-      <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-col">
-        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-          <div class="flex items-center gap-3">
-            <span id="rpActiveAvatar" class="text-2xl p-2 bg-slate-800 rounded-lg">☕</span>
-            <div>
-              <h3 id="rpActiveTitle" class="text-sm font-bold text-white">Ordering Coffee (Barista)</h3>
-              <p id="rpActiveStatus" class="text-xs text-slate-400">Ready to simulate scenario</p>
-            </div>
-          </div>
-          <button id="rpToggleBtn" onclick="toggleRoleplaySession()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs px-4 py-2 rounded-lg transition">
-            🎬 Start Role-Play
-          </button>
-        </div>
-
-        <!-- Roleplay Conversation Transcript -->
-        <div id="rpLogs" class="w-full mt-3 bg-slate-950 border border-slate-800 rounded-lg p-3 text-left min-h-[140px] max-h-56 overflow-y-auto space-y-2 text-xs">
-          <p id="rpPlaceholder" class="text-slate-500 italic text-center py-6">Choose a scenario below or enter your own custom prompt, then tap "Start Role-Play".</p>
-        </div>
-      </div>
-
-      <!-- Custom Scenario Text Box -->
-      <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
-        <label class="block text-xs font-bold text-indigo-400 uppercase tracking-wider mb-2">Create Custom Scenario</label>
-        <div class="flex gap-2">
-          <input type="text" id="customRpInput" placeholder="E.g., Asking for directions in London..." class="flex-1 bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-indigo-500">
-          <button onclick="applyCustomScenario()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-2 rounded-lg text-xs font-semibold transition">Set Scenario</button>
-        </div>
-      </div>
-
-      <!-- 52 Situations Directory -->
-      <div>
-        <div class="flex items-center justify-between mb-3">
-          <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider">50+ Everyday Situations Library</h4>
-          <span class="text-xs text-indigo-400">52 Scenarios</span>
-        </div>
-        
-        <div id="scenariosContainer" class="space-y-4">
-          <!-- Populated dynamically via JS -->
-        </div>
-      </div>
-
-    </section>
-
-  </main>
-
-  <script>
-    // --- Level Configuration ---
-    const levelContent = {
-      Beginner: {
-        word: "Frequent",
-        def: "Happening often or regularly.",
-        example: "I am a frequent visitor to the library.",
-        prompt: "Introduce yourself. What is your name, where are you from, and what do you like to do in your free time?"
-      },
-      Intermediate: {
-        word: "Resilient",
-        def: "Able to withstand or recover quickly from difficult conditions.",
-        example: "Local businesses remained resilient during the economic downturn.",
-        prompt: "Describe one challenge you faced this week and how you resolved it."
-      },
-      Advanced: {
-        word: "Pragmatic",
-        def: "Dealing with things sensibly and realistically based on practical considerations.",
-        example: "We took a pragmatic approach to optimizing our application's performance.",
-        prompt: "Discuss the trade-offs between moving fast and maintaining high quality in software engineering."
-      }
-    };
-
-    function updateLevelContent() {
-      const selected = document.getElementById('levelSelect').value;
-      const data = levelContent[selected];
-      document.getElementById('wordTitle').innerText = data.word;
-      document.getElementById('wordDef').innerText = data.def;
-      document.getElementById('wordExample').innerText = `"${data.example}"`;
-      document.getElementById('missionPrompt').innerText = data.prompt;
-      document.getElementById('levelBadge').innerText = selected;
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SpeakFlow — AI Language Tutor</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --accent: #6366f1;
+      --accent-hover: #4f46e5;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --user-bubble: #312e81;
+      --ai-bubble: #334155;
+      --border: #475569;
     }
 
-    // --- 52 Situations Database ---
-    const scenariosData = [
-      {
-        category: "Food, Dining & Cafes",
-        icon: "☕",
-        items: [
-          { title: "Ordering Coffee", role: "Barista", prompt: "Welcome to Sunrise Cafe! What coffee can I brew for you today?" },
-          { title: "Customizing a Meal", role: "Waiter", prompt: "Good evening. Are you ready to order, or do you have any dietary preferences?" },
-          { title: "Returning Wrong Dish", role: "Server", prompt: "I apologize about that! What seems to be the issue with your meal?" },
-          { title: "Asking for the Bill", role: "Cashier", prompt: "Hope you enjoyed your dinner! Will this be together or split payment?" },
-          { title: "Reserving a Table", role: "Host", prompt: "Thanks for calling Bistro Luxe. What date and party size are you looking for?" },
-          { title: "Fast Food Drive-Thru", role: "Drive-thru Operator", prompt: "Welcome to QuickBite! Go ahead whenever you're ready with your combo order." },
-          { title: "Inquiring Ingredients", role: "Chef", prompt: "Hello! Which dish would you like to know the allergen info for?" },
-          { title: "Street Food Stall", role: "Vendor", prompt: "Hot and fresh! How spicy would you like your taco wrap?" }
-        ]
-      },
-      {
-        category: "Travel & Transit",
-        icon: "✈️",
-        items: [
-          { title: "Airport Check-In", role: "Desk Agent", prompt: "Good day. May I see your passport and flight confirmation?" },
-          { title: "Missing Luggage", role: "Baggage Officer", prompt: "Can you describe what your missing luggage looks like and its brand?" },
-          { title: "Hotel Check-In", role: "Front Desk Clerk", prompt: "Welcome to the Grand Hotel. Do you have a reservation under your name?" },
-          { title: "Requesting Room Change", role: "Concierge", prompt: "I'm sorry your room is noisy. Would you prefer a higher floor?" },
-          { title: "Asking Metro Directions", role: "Station Officer", prompt: "Which line or station are you trying to transfer to?" },
-          { title: "Taking a Taxi / Ride", role: "Driver", prompt: "Hi there! Just confirming: are we heading to the central terminal?" },
-          { title: "Renting a Car", role: "Rental Agent", prompt: "What size car are you looking to rent, and do you need full insurance coverage?" },
-          { title: "Train Station Booking", role: "Ticket Clerk", prompt: "One-way or round-trip ticket, and which departure time works best?" },
-          { title: "Airport Customs", role: "Immigration Officer", prompt: "What is the primary purpose and planned duration of your stay?" }
-        ]
-      },
-      {
-        category: "Professional & Workplace",
-        icon: "💼",
-        items: [
-          { title: "Job Interview Opening", role: "Hiring Manager", prompt: "Welcome! To begin, could you walk me through your background and key projects?" },
-          { title: "Salary Negotiation", role: "HR Director", prompt: "We're excited to offer you the position. What are your salary expectations?" },
-          { title: "Daily Standup Update", role: "Team Lead", prompt: "Let's do updates. What did you complete yesterday and what are your blockers?" },
-          { title: "Client Demo Call", role: "Client", prompt: "We liked the overview. Can you demonstrate how your core feature functions?" },
-          { title: "Handling Critical Feedback", role: "Manager", prompt: "Let's review the recent deadline delay. What caused the bottleneck?" },
-          { title: "Asking for Time Off", role: "Supervisor", prompt: "You submitted a leave request. Will your tasks be covered while away?" },
-          { title: "Colleague Brainstorming", role: "Coworker", prompt: "I'm stuck on this layout. Do you have any creative suggestions?" },
-          { title: "Resolving Team Disagreement", role: "Peer", prompt: "I think we should take approach B. Why do you prefer approach A?" },
-          { title: "Giving Resignation Notice", role: "Director", prompt: "Thanks for meeting privately. What did you want to discuss?" }
-        ]
-      },
-      {
-        category: "Shopping & Retail",
-        icon: "🛍️",
-        items: [
-          { title: "Returning a Defective Item", role: "Store Associate", prompt: "Do you have the purchase receipt and original packaging with you?" },
-          { title: "Finding the Right Size", role: "Sales Assistant", prompt: "Looking for another size or color in this jacket? I can check inventory." },
-          { title: "Electronics Warranty Claim", role: "Tech Support Clerk", prompt: "What issue is your laptop experiencing, and when did it start?" },
-          { title: "Price Matching Inquiry", role: "Cashier", prompt: "Can you show me the official listing where you found the lower price?" },
-          { title: "Grocery Produce Question", role: "Grocer", prompt: "Are you looking for organic items or standard seasonal produce?" },
-          { title: "Canceling a Store Membership", role: "Customer Rep", prompt: "May I ask why you're choosing to cancel your VIP membership today?" },
-          { title: "Gift Exchange", role: "Store Clerk", prompt: "Was this an online order or in-store purchase? I can issue store credit." },
-          { title: "Bargaining at Flea Market", role: "Antique Seller", prompt: "That handcrafted piece is 50 dollars. What's your offer?" }
-        ]
-      },
-      {
-        category: "Emergency & Medical",
-        icon: "🏥",
-        items: [
-          { title: "Doctor Appointment Intake", role: "Physician", prompt: "Hello. What specific symptoms have you been feeling this week?" },
-          { title: "Buying Pharmacy Medicine", role: "Pharmacist", prompt: "Do you have a prescription for this, or do you need over-the-counter tablets?" },
-          { title: "Dental Checkup", role: "Dentist", prompt: "Which tooth has been giving you pain or sensitivity to cold?" },
-          { title: "Reporting Lost Wallet/ID", role: "Police Officer", prompt: "Where did you last have your wallet, and what cards were inside?" },
-          { title: "Emergency Dispatch Call", role: "911 Dispatcher", prompt: "Emergency operator. What is the exact address of your emergency?" },
-          { title: "Calling In Sick", role: "Office Manager", prompt: "Sorry to hear you're unwell. How long do you expect to rest?" },
-          { title: "Optometry Glasses Fit", role: "Optician", prompt: "Are you experiencing eye strain when reading screens or driving?" },
-          { title: "Pet Vet Visit", role: "Veterinarian", prompt: "What changes have you noticed in your pet's eating habits or energy?" }
-        ]
-      },
-      {
-        category: "Social & Everyday Encounters",
-        icon: "💬",
-        items: [
-          { title: "Meeting a Neighbor", role: "New Neighbor", prompt: "Hi! I just moved in next door on the third floor. I'm Sam!" },
-          { title: "Gym Trainer Consultation", role: "Fitness Coach", prompt: "What are your primary goals—building muscle, stamina, or weight loss?" },
-          { title: "Making Weekend Plans", role: "Close Friend", prompt: "Are you free this Saturday? Thinking of catching a movie or hiking." },
-          { title: "Bank Account Opening", role: "Bank Teller", prompt: "Are you interested in opening a checking or savings account today?" },
-          { title: "Apartment Rental Inquiry", role: "Landlord", prompt: "The apartment is available from next month. When would you like to view it?" },
-          { title: "Calling Internet Provider", role: "Support Agent", prompt: "Thanks for calling NetSpeed. What lights are on your modem right now?" },
-          { title: "Small Talk at a Party", role: "Party Guest", prompt: "Hey! How do you know the host? Great music tonight, right?" },
-          { title: "Borrowing Tools from Neighbor", role: "Neighbor", prompt: "Hey there! Do you need a power drill or a regular toolbox?" },
-          { title: "Book Club Discussion", role: "Club Leader", prompt: "What was your honest opinion of the main character's final decision?" },
-          { title: "Pet Encounter at Park", role: "Dog Owner", prompt: "Don't worry, he's friendly! Do you have a dog of your own?" },
-          { title: "Booking a Haircut", role: "Barber", prompt: "What kind of trim or styling are we doing for you today?" }
-        ]
-      }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    header {
+      background-color: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .brand {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #818cf8;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    select {
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 0.85rem;
+      outline: none;
+      max-width: 220px;
+    }
+
+    main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .message {
+      max-width: 75%;
+      padding: 12px 16px;
+      border-radius: 12px;
+      line-height: 1.5;
+      font-size: 0.95rem;
+      word-wrap: break-word;
+    }
+
+    .message.user {
+      align-self: flex-end;
+      background-color: var(--user-bubble);
+      color: #e0e7ff;
+      border-bottom-right-radius: 2px;
+    }
+
+    .message.ai {
+      align-self: flex-start;
+      background-color: var(--ai-bubble);
+      color: var(--text);
+      border-bottom-left-radius: 2px;
+    }
+
+    .status-indicator {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-align: center;
+      min-height: 1.2em;
+    }
+
+    footer {
+      background-color: var(--card);
+      border-top: 1px solid var(--border);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--accent);
+    }
+
+    button {
+      background-color: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    button:hover {
+      background-color: var(--accent-hover);
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-mic {
+      background-color: #0284c7;
+    }
+
+    .btn-mic:hover {
+      background-color: #0369a1;
+    }
+
+    .btn-mic.recording {
+      background-color: #ef4444;
+      animation: pulse 1.2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.6; }
+      100% { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <span>🎙️</span> SpeakFlow
+    </div>
+    <div class="controls">
+      <label for="voiceSelect">Tutor Voice:</label>
+      <select id="voiceSelect"></select>
+    </div>
+  </header>
+
+  <main id="chatLog">
+    <div class="message ai">
+      Hello! I'm your English tutor. What topic would you like to practice today?
+    </div>
+  </main>
+
+  <div class="status-indicator" id="statusText"></div>
+
+  <footer>
+    <button id="micBtn" class="btn-mic" type="button" title="Speak via microphone">🎤 Talk</button>
+    <input type="text" id="userInput" placeholder="Type or click Talk to practice..." autocomplete="off" />
+    <button id="sendBtn" type="button">Send</button>
+  </footer>
+
+  <script>
+    const BACKEND_URL = "https://speakflow-proxy.chizovechikho.workers.dev";
+    const SYSTEM_PROMPT = "You are a friendly, encouraging English conversation tutor. Respond naturally in 1-2 punchy sentences. Correct minor grammatical mistakes gently if necessary, and always prompt the learner to keep the conversation flowing.";
+
+    let conversation = [
+      { sender: "AI", text: "Hello! I'm your English tutor. What topic would you like to practice today?" }
     ];
 
-    // --- State Variables ---
-    let recognition = null;
-    let synth = window.speechSynthesis;
-    let isCallActive = false;
-    let isRpActive = false;
-    let isAwaitingVoice = false; // Prevents unwanted loops while AI is speaking
+    const chatLog = document.getElementById("chatLog");
+    const userInput = document.getElementById("userInput");
+    const sendBtn = document.getElementById("sendBtn");
+    const micBtn = document.getElementById("micBtn");
+    const statusText = document.getElementById("statusText");
+    const voiceSelect = document.getElementById("voiceSelect");
 
-    let currentRp = {
-      title: "Ordering Coffee",
-      role: "Barista",
-      avatar: "☕",
-      prompt: "Welcome to Sunrise Cafe! What coffee can I brew for you today?"
-    };
+    let availableVoices = [];
 
-    // --- Speech Recognition Setup with No-Timeout Loop ---
+    // --- Voice Management ---
+    function loadVoices() {
+      availableVoices = window.speechSynthesis.getVoices().filter(v => v.lang.startsWith("en"));
+      voiceSelect.innerHTML = "";
+
+      if (availableVoices.length === 0) {
+        const opt = document.createElement("option");
+        opt.textContent = "Default Browser Voice";
+        voiceSelect.appendChild(opt);
+        return;
+      }
+
+      availableVoices.forEach((voice, index) => {
+        const option = document.createElement("option");
+        option.value = index;
+        option.textContent = `${voice.name} (${voice.lang})`;
+        if (voice.name.includes("Natural") || voice.name.includes("Google") || voice.default) {
+          option.selected = true;
+        }
+        voiceSelect.appendChild(option);
+      });
+    }
+
+    loadVoices();
+    if (speechSynthesis.onvoiceschanged !== undefined) {
+      speechSynthesis.onvoiceschanged = loadVoices;
+    }
+
+    function speakText(text) {
+      if (!("speechSynthesis" in window)) return;
+      window.speechSynthesis.cancel();
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      const selectedIndex = parseInt(voiceSelect.value, 10);
+      if (availableVoices[selectedIndex]) {
+        utterance.voice = availableVoices[selectedIndex];
+      }
+      utterance.rate = 1.0;
+      utterance.pitch = 1.0;
+      window.speechSynthesis.speak(utterance);
+    }
+
+    // --- Chat Rendering ---
+    function appendMessage(sender, text) {
+      const bubble = document.createElement("div");
+      bubble.className = `message ${sender === "You" ? "user" : "ai"}`;
+      bubble.textContent = text;
+      chatLog.appendChild(bubble);
+      chatLog.scrollTop = chatLog.scrollHeight;
+    }
+
+    // --- Handle Sending Messages ---
+    async function handleSend() {
+      const text = userInput.value.trim();
+      if (!text) return;
+
+      appendMessage("You", text);
+      conversation.push({ sender: "You", text });
+      userInput.value = "";
+      userInput.disabled = true;
+      sendBtn.disabled = true;
+      statusText.textContent = "Tutor is thinking...";
+
+      try {
+        const res = await fetch(BACKEND_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            system_prompt: SYSTEM_PROMPT,
+            messages: conversation
+          })
+        });
+
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        const reply = data.reply || "Sorry, I couldn't process that.";
+
+        appendMessage("AI", reply);
+        conversation.push({ sender: "AI", text: reply });
+        speakText(reply);
+      } catch (err) {
+        appendMessage("AI", "Could not reach the server. Please verify the Cloudflare Worker setup.");
+        console.error(err);
+      } finally {
+        userInput.disabled = false;
+        sendBtn.disabled = false;
+        statusText.textContent = "";
+        userInput.focus();
+      }
+    }
+
+    sendBtn.addEventListener("click", handleSend);
+    userInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") handleSend();
+    });
+
+    // --- Browser Speech Recognition (STT) ---
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let recognition = null;
+    let isRecording = false;
+
     if (SpeechRecognition) {
       recognition = new SpeechRecognition();
       recognition.continuous = false;
       recognition.interimResults = false;
-      recognition.lang = 'en-US';
+      recognition.lang = "en-US";
 
-      // Always auto-restart if disconnected while awaiting user voice
-      recognition.onend = () => {
-        if (isAwaitingVoice) {
-          setTimeout(() => {
-            if (isAwaitingVoice) safeStartRecognition();
-          }, 250);
-        }
+      recognition.onstart = () => {
+        isRecording = true;
+        micBtn.classList.add("recording");
+        micBtn.textContent = "🛑 Listening...";
+        statusText.textContent = "Listening to your voice...";
       };
-
-      recognition.onerror = (e) => {
-        // Ignored no-speech timeouts completely so beginners can think indefinitely
-        if (isAwaitingVoice) {
-          setTimeout(() => {
-            if (isAwaitingVoice) safeStartRecognition();
-          }, 250);
-        }
-      };
-    }
-
-    function safeStartRecognition() {
-      try {
-        recognition.start();
-      } catch (err) {
-        // Ignore if already active
-      }
-    }
-
-    function safeStopRecognition() {
-      isAwaitingVoice = false;
-      try {
-        recognition.stop();
-      } catch (err) {}
-    }
-
-    // --- Tab Switcher ---
-    function switchTab(tabId) {
-      ['missions', 'call', 'roleplay'].forEach(t => {
-        document.getElementById(`view-${t}`).classList.add('hidden');
-        document.getElementById(`tab-${t}`).className = 'flex-1 py-2 text-xs md:text-sm font-semibold rounded-lg bg-slate-900 text-slate-400 hover:text-white transition';
-      });
-      document.getElementById(`view-${tabId}`).classList.remove('hidden');
-      document.getElementById(`tab-${tabId}`).className = 'flex-1 py-2 text-xs md:text-sm font-semibold rounded-lg bg-indigo-600 text-white transition';
-
-      if (isCallActive && tabId !== 'call') endFriendCall();
-      if (isRpActive && tabId !== 'roleplay') endRoleplaySession();
-    }
-
-    function speakText(text, callback) {
-      if (!synth) return;
-      safeStopRecognition(); // Silence mic while speaker speaks
-      synth.cancel();
-
-      const utterance = new SpeechSynthesisUtterance(text);
-      const level = document.getElementById('levelSelect').value;
-      utterance.rate = level === 'Beginner' ? 0.82 : (level === 'Advanced' ? 1.05 : 0.95);
-      utterance.pitch = 1.0;
-      utterance.onend = () => { if (callback) callback(); };
-      synth.speak(utterance);
-    }
-
-    // --- 1. CALL AI (CASUAL FRIEND) ---
-    function toggleFriendCall() {
-      if (!isCallActive) startFriendCall();
-      else endFriendCall();
-    }
-
-    function startFriendCall() {
-      isCallActive = true;
-      const btn = document.getElementById('callToggleBtn');
-      const status = document.getElementById('callStatus');
-      const pulse = document.getElementById('callPulse');
-      const logs = document.getElementById('callLogs');
-
-      logs.innerHTML = "";
-      btn.innerText = "🔴 Hang Up";
-      btn.className = "bg-rose-600 hover:bg-rose-500 text-white font-semibold text-sm px-6 py-2.5 rounded-full shadow-lg transition";
-      status.innerText = "Connected • Alex is speaking...";
-      pulse.classList.remove('hidden');
-
-      const greeting = "Hey there! Take your time, there's no rush at all. How has your day been?";
-      appendLog('callLogs', 'Alex', greeting);
-      speakText(greeting, () => listenForCall());
-    }
-
-    function endFriendCall() {
-      isCallActive = false;
-      safeStopRecognition();
-      if (synth) synth.cancel();
-
-      const btn = document.getElementById('callToggleBtn');
-      const status = document.getElementById('callStatus');
-      const pulse = document.getElementById('callPulse');
-      const logs = document.getElementById('callLogs');
-
-      btn.innerText = "📞 Start Call";
-      btn.className = "bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm px-6 py-2.5 rounded-full shadow-lg transition";
-      status.innerText = "Call ended • Transcript cleared";
-      pulse.classList.add('hidden');
-
-      logs.innerHTML = `<p class="text-slate-500 italic text-center py-6">Conversation transcript appears here during the active call.</p>`;
-    }
-
-    function listenForCall() {
-      if (!isCallActive || !recognition) return;
-      document.getElementById('callStatus').innerText = "Listening... Take all the time you need to think.";
-      isAwaitingVoice = true;
-
-      recognition.onresult = (e) => {
-        isAwaitingVoice = false;
-        const text = e.results[0][0].transcript;
-        appendLog('callLogs', 'You', text);
-        document.getElementById('callStatus').innerText = "Thinking...";
-        setTimeout(() => generateFriendReply(text), 450);
-      };
-
-      safeStartRecognition();
-    }
-
-    function generateFriendReply(userInput) {
-      if (!isCallActive) return;
-      let reply = "That makes a lot of sense! Tell me more about that.";
-      const lower = userInput.toLowerCase();
-      if (lower.includes("tired") || lower.includes("exhausted") || lower.includes("sleep")) {
-        reply = "Rest is important. Have you had a very packed schedule recently?";
-      } else if (lower.includes("app") || lower.includes("build") || lower.includes("code") || lower.includes("project")) {
-        reply = "Building your own projects is the best way to learn! What part of it are you working on right now?";
-      }
-
-      appendLog('callLogs', 'Alex', reply);
-      document.getElementById('callStatus').innerText = "Alex is speaking...";
-      speakText(reply, () => {
-        if (isCallActive) listenForCall();
-      });
-    }
-
-    // --- 2. ROLE-PLAY STUDIO ---
-    function toggleRoleplaySession() {
-      if (!isRpActive) startRoleplaySession();
-      else endRoleplaySession();
-    }
-
-    function startRoleplaySession() {
-      isRpActive = true;
-      const btn = document.getElementById('rpToggleBtn');
-      const status = document.getElementById('rpActiveStatus');
-      const logs = document.getElementById('rpLogs');
-
-      logs.innerHTML = "";
-      btn.innerText = "⏹️ End Scenario";
-      btn.className = "bg-rose-600 hover:bg-rose-500 text-white font-semibold text-xs px-4 py-2 rounded-lg transition";
-      status.innerText = `${currentRp.role} is speaking...`;
-
-      appendLog('rpLogs', currentRp.role, currentRp.prompt);
-      speakText(currentRp.prompt, () => listenForRoleplay());
-    }
-
-    function endRoleplaySession() {
-      isRpActive = false;
-      safeStopRecognition();
-      if (synth) synth.cancel();
-
-      const btn = document.getElementById('rpToggleBtn');
-      const status = document.getElementById('rpActiveStatus');
-      const logs = document.getElementById('rpLogs');
-
-      btn.innerText = "🎬 Start Role-Play";
-      btn.className = "bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs px-4 py-2 rounded-lg transition";
-      status.innerText = "Scenario ended • Transcript cleared";
-
-      logs.innerHTML = `<p class="text-slate-500 italic text-center py-6">Choose a scenario below or enter your own custom prompt, then tap "Start Role-Play".</p>`;
-    }
-
-    function listenForRoleplay() {
-      if (!isRpActive || !recognition) return;
-      document.getElementById('rpActiveStatus').innerText = "Listening... Take your time to reply.";
-      isAwaitingVoice = true;
-
-      recognition.onresult = (e) => {
-        isAwaitingVoice = false;
-        const text = e.results[0][0].transcript;
-        appendLog('rpLogs', 'You', text);
-        document.getElementById('rpActiveStatus').innerText = "AI is responding...";
-        setTimeout(() => generateRoleplayReply(text), 450);
-      };
-
-      safeStartRecognition();
-    }
-
-    function generateRoleplayReply(userInput) {
-      if (!isRpActive) return;
-      let reply = `Understood! I will take care of that for you right now.`;
-      const lower = userInput.toLowerCase();
-
-      if (lower.includes("size") || lower.includes("large") || lower.includes("medium") || lower.includes("small")) {
-        reply = "Got it. Would you like anything else to accompany that today?";
-      } else if (lower.includes("price") || lower.includes("cost") || lower.includes("pay") || lower.includes("card")) {
-        reply = "That will be 12 dollars total. Tap or insert your card whenever you are ready.";
-      } else if (lower.includes("help") || lower.includes("where") || lower.includes("how")) {
-        reply = "Of course! Walk down the main hall and you will see it directly on your left.";
-      }
-
-      appendLog('rpLogs', currentRp.role, reply);
-      document.getElementById('rpActiveStatus').innerText = `${currentRp.role} is speaking...`;
-      speakText(reply, () => {
-        if (isRpActive) listenForRoleplay();
-      });
-    }
-
-    function selectScenario(title, role, avatar, prompt) {
-      if (isRpActive) endRoleplaySession();
-      currentRp = { title, role, avatar, prompt };
-      document.getElementById('rpActiveTitle').innerText = `${title} (${role})`;
-      document.getElementById('rpActiveAvatar').innerText = avatar;
-      document.getElementById('rpActiveStatus').innerText = "Scenario loaded. Tap Start to practice.";
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function applyCustomScenario() {
-      const input = document.getElementById('customRpInput');
-      const text = input.value.trim();
-      if (!text) return;
-
-      if (isRpActive) endRoleplaySession();
-      currentRp = {
-        title: text,
-        role: "Partner",
-        avatar: "✍️",
-        prompt: `Let's begin this scenario: "${text}". How would you like to start? Take your time.`
-      };
-      document.getElementById('rpActiveTitle').innerText = currentRp.title;
-      document.getElementById('rpActiveAvatar').innerText = currentRp.avatar;
-      document.getElementById('rpActiveStatus').innerText = "Custom scenario ready!";
-      input.value = "";
-    }
-
-    // --- Directory Rendering ---
-    function renderScenarios() {
-      const container = document.getElementById('scenariosContainer');
-      container.innerHTML = "";
-
-      scenariosData.forEach(cat => {
-        const catBox = document.createElement('div');
-        catBox.className = "bg-slate-900/60 border border-slate-800/80 rounded-xl p-4";
-
-        const title = document.createElement('h5');
-        title.className = "text-xs font-bold text-slate-300 flex items-center gap-2 mb-3";
-        title.innerHTML = `<span>${cat.icon}</span> ${cat.category}`;
-        catBox.appendChild(title);
-
-        const grid = document.createElement('div');
-        grid.className = "grid grid-cols-1 sm:grid-cols-2 gap-2";
-
-        cat.items.forEach(item => {
-          const card = document.createElement('div');
-          card.className = "bg-slate-950 border border-slate-800/60 hover:border-indigo-500/80 p-3 rounded-lg cursor-pointer transition flex items-center justify-between";
-          card.onclick = () => selectScenario(item.title, item.role, cat.icon, item.prompt);
-          card.innerHTML = `
-            <div>
-              <p class="text-xs font-semibold text-slate-200">${item.title}</p>
-              <p class="text-[11px] text-slate-400">Role: ${item.role}</p>
-            </div>
-            <span class="text-xs text-indigo-400">Select →</span>
-          `;
-          grid.appendChild(card);
-        });
-
-        catBox.appendChild(grid);
-        container.appendChild(catBox);
-      });
-    }
-
-    function appendLog(elementId, sender, message) {
-      const container = document.getElementById(elementId);
-      const isUser = sender === "You";
-      const p = document.createElement('p');
-      p.innerHTML = `<strong class="${isUser ? 'text-indigo-400' : 'text-emerald-400'}">${sender}:</strong> ${message}`;
-      container.appendChild(p);
-      container.scrollTop = container.scrollHeight;
-    }
-
-    // --- 3. DAILY MISSIONS LOGIC ---
-    let isMissionRecording = false;
-    function toggleMissionRecording() {
-      if (!recognition) return;
-      if (isMissionRecording) {
-        safeStopRecognition();
-        return;
-      }
-
-      const transcriptBox = document.getElementById('missionTranscript');
-      const statusBtn = document.getElementById('missionMicStatus');
-      transcriptBox.innerText = "Listening... Take your time and speak.";
-      statusBtn.innerText = "⏹️ Stop Recording";
-      isMissionRecording = true;
-      isAwaitingVoice = true;
 
       recognition.onresult = (event) => {
-        isAwaitingVoice = false;
-        const spoken = event.results[0][0].transcript;
-        transcriptBox.innerText = `"${spoken}"`;
-        document.getElementById('missionFeedback').classList.remove('hidden');
-        document.getElementById('missionFeedbackText').innerHTML = "Clear pronunciation! Great job articulating your thoughts.";
-        statusBtn.innerText = "🎙️ Start Speaking";
-        isMissionRecording = false;
+        const transcript = event.results[0][0].transcript;
+        userInput.value = transcript;
+        handleSend();
       };
 
-      safeStartRecognition();
-    }
+      recognition.onerror = () => {
+        statusText.textContent = "Microphone error or permission denied.";
+      };
 
-    // Initialize content
-    renderScenarios();
+      recognition.onend = () => {
+        isRecording = false;
+        micBtn.classList.remove("recording");
+        micBtn.textContent = "🎤 Talk";
+        if (statusText.textContent === "Listening to your voice...") {
+          statusText.textContent = "";
+        }
+      };
+
+      micBtn.addEventListener("click", () => {
+        if (isRecording) {
+          recognition.stop();
+        } else {
+          window.speechSynthesis.cancel();
+          recognition.start();
+        }
+      });
+    } else {
+      micBtn.style.display = "none";
+    }
   </script>
 </body>
 </html>
