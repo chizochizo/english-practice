@@ -6,367 +6,309 @@
   <title>SpeakFlow — AI Language Tutor</title>
   <style>
     :root {
-      --bg: #0f172a;
-      --card: #1e293b;
-      --accent: #6366f1;
-      --accent-hover: #4f46e5;
+      --bg: #0b0f19;
+      --card: #151e2e;
+      --accent: #4f46e5;
+      --accent-hover: #4338ca;
       --text: #f8fafc;
       --text-muted: #94a3b8;
-      --user-bubble: #312e81;
-      --ai-bubble: #334155;
-      --border: #475569;
+      --border: #243248;
+      --bubble-user: #312e81;
+      --bubble-ai: #1e293b;
     }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+    
+    header { background: var(--card); border-bottom: 1px solid var(--border); padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .brand { font-size: 1.2rem; font-weight: 700; color: #818cf8; display: flex; align-items: center; gap: 8px; }
+    .header-controls { display: flex; align-items: center; gap: 12px; }
+    select { background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 6px; padding: 6px 10px; font-size: 0.85rem; outline: none; }
+    
+    nav.tabs { display: flex; background: #0f172a; border-bottom: 1px solid var(--border); padding: 0 16px; }
+    nav.tabs button { background: none; border: none; color: var(--text-muted); padding: 12px 16px; font-weight: 600; cursor: pointer; border-bottom: 2px solid transparent; font-size: 0.9rem; }
+    nav.tabs button.active { color: #818cf8; border-bottom-color: #818cf8; }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    }
+    .tab-view { flex: 1; display: none; overflow-y: auto; padding: 20px; flex-direction: column; }
+    .tab-view.active { display: flex; }
 
-    body {
-      background-color: var(--bg);
-      color: var(--text);
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      overflow: hidden;
-    }
+    /* Cards */
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; max-width: 900px; margin: 0 auto; width: 100%; }
+    .feature-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; cursor: pointer; transition: transform 0.15s, border-color 0.15s; }
+    .feature-card:hover { transform: translateY(-2px); border-color: var(--accent); }
+    .feature-card h3 { color: #e2e8f0; font-size: 1.1rem; margin-bottom: 6px; }
+    .feature-card p { color: var(--text-muted); font-size: 0.85rem; line-height: 1.4; }
 
-    header {
-      background-color: var(--card);
-      border-bottom: 1px solid var(--border);
-      padding: 12px 20px;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
+    /* Chat layout */
+    .chat-container { flex: 1; display: flex; flex-direction: column; max-width: 900px; margin: 0 auto; width: 100%; height: 100%; }
+    .chat-messages { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding: 10px 0; }
+    .bubble { max-width: 75%; padding: 10px 14px; border-radius: 10px; font-size: 0.95rem; line-height: 1.4; }
+    .bubble.user { align-self: flex-end; background: var(--bubble-user); }
+    .bubble.ai { align-self: flex-start; background: var(--bubble-ai); }
 
-    .brand {
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: #818cf8;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+    /* Call Mode view */
+    .call-view { align-items: center; justify-content: center; text-align: center; gap: 24px; }
+    .avatar-ring { width: 140px; height: 140px; border-radius: 50%; background: #1e1b4b; border: 3px solid #6366f1; display: flex; align-items: center; justify-content: center; font-size: 3rem; margin: 0 auto; transition: all 0.3s ease; }
+    .avatar-ring.active { transform: scale(1.08); box-shadow: 0 0 30px rgba(99, 102, 241, 0.6); }
 
-    .controls {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    label {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-
-    select {
-      background: var(--bg);
-      color: var(--text);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 6px 10px;
-      font-size: 0.85rem;
-      outline: none;
-      max-width: 220px;
-    }
-
-    main {
-      flex: 1;
-      overflow-y: auto;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .message {
-      max-width: 75%;
-      padding: 12px 16px;
-      border-radius: 12px;
-      line-height: 1.5;
-      font-size: 0.95rem;
-      word-wrap: break-word;
-    }
-
-    .message.user {
-      align-self: flex-end;
-      background-color: var(--user-bubble);
-      color: #e0e7ff;
-      border-bottom-right-radius: 2px;
-    }
-
-    .message.ai {
-      align-self: flex-start;
-      background-color: var(--ai-bubble);
-      color: var(--text);
-      border-bottom-left-radius: 2px;
-    }
-
-    .status-indicator {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      text-align: center;
-      min-height: 1.2em;
-    }
-
-    footer {
-      background-color: var(--card);
-      border-top: 1px solid var(--border);
-      padding: 14px 20px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    input[type="text"] {
-      flex: 1;
-      background: var(--bg);
-      color: var(--text);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 10px 14px;
-      font-size: 0.95rem;
-      outline: none;
-    }
-
-    input[type="text"]:focus {
-      border-color: var(--accent);
-    }
-
-    button {
-      background-color: var(--accent);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      padding: 10px 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.15s ease;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    button:hover {
-      background-color: var(--accent-hover);
-    }
-
-    button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    .btn-mic {
-      background-color: #0284c7;
-    }
-
-    .btn-mic:hover {
-      background-color: #0369a1;
-    }
-
-    .btn-mic.recording {
-      background-color: #ef4444;
-      animation: pulse 1.2s infinite;
-    }
-
-    @keyframes pulse {
-      0% { opacity: 1; }
-      50% { opacity: 0.6; }
-      100% { opacity: 1; }
-    }
+    /* Footer Controls */
+    footer { background: var(--card); border-top: 1px solid var(--border); padding: 12px 20px; display: flex; gap: 10px; }
+    input[type="text"] { flex: 1; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; outline: none; font-size: 0.95rem; }
+    .btn { background: var(--accent); color: white; border: none; border-radius: 8px; padding: 10px 18px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+    .btn-mic { background: #0284c7; }
+    .btn-mic.recording { background: #dc2626; }
   </style>
 </head>
 <body>
 
   <header>
-    <div class="brand">
-      <span>🎙️</span> SpeakFlow
-    </div>
-    <div class="controls">
-      <label for="voiceSelect">Tutor Voice:</label>
+    <div class="brand"><span>🎙️</span> SpeakFlow</div>
+    <div class="header-controls">
+      <label for="voiceSelect" style="font-size: 0.85rem; color: var(--text-muted);">Voice:</label>
       <select id="voiceSelect"></select>
     </div>
   </header>
 
-  <main id="chatLog">
-    <div class="message ai">
-      Hello! I'm your English tutor. What topic would you like to practice today?
+  <nav class="tabs">
+    <button class="active" onclick="switchTab('tutor')">Free Chat</button>
+    <button onclick="switchTab('daily')">Daily Lesson & Word</button>
+    <button onclick="switchTab('roleplay')">Roleplays</button>
+    <button onclick="switchTab('call')">AI Call</button>
+  </nav>
+
+  <!-- TAB 1: Chat -->
+  <main id="tab-tutor" class="tab-view active">
+    <div class="chat-container">
+      <div id="tutorMessages" class="chat-messages">
+        <div class="bubble ai">Hello! I am your English conversational tutor. What would you like to talk about today?</div>
+      </div>
     </div>
   </main>
 
-  <div class="status-indicator" id="statusText"></div>
+  <!-- TAB 2: Daily Lesson & Word -->
+  <main id="tab-daily" class="tab-view">
+    <div class="card-grid">
+      <div class="feature-card" onclick="startTopic('Word of the day: Resilient. Let\'s learn how to use it in conversation.')">
+        <h3>📖 Word of the Day: Resilient</h3>
+        <p>Meaning: Able to recover quickly from difficult conditions. Click to practice using it in sentences.</p>
+      </div>
+      <div class="feature-card" onclick="startTopic('Today\'s grammar micro-lesson: Common confusions between Since vs For.')">
+        <h3>✏️ Micro-Lesson: "Since" vs "For"</h3>
+        <p>Master time prepositions with interactive practice exercises.</p>
+      </div>
+    </div>
+  </main>
 
-  <footer>
-    <button id="micBtn" class="btn-mic" type="button" title="Speak via microphone">🎤 Talk</button>
-    <input type="text" id="userInput" placeholder="Type or click Talk to practice..." autocomplete="off" />
-    <button id="sendBtn" type="button">Send</button>
+  <!-- TAB 3: Roleplays -->
+  <main id="tab-roleplay" class="tab-view">
+    <div class="card-grid">
+      <div class="feature-card" onclick="startRoleplay('Roleplay: You are a barista at a coffee shop and I am a customer ordering coffee and snacks.')">
+        <h3>☕ Coffee Shop Order</h3>
+        <p>Order food, ask about drink sizes, and customize ingredients.</p>
+      </div>
+      <div class="feature-card" onclick="startRoleplay('Roleplay: You are an interviewer conducting a job interview for a software developer role.')">
+        <h3>💼 Job Interview</h3>
+        <p>Practice answering common behavioral and technical screening questions.</p>
+      </div>
+      <div class="feature-card" onclick="startRoleplay('Roleplay: You are a border control immigration officer asking travelers questions at the airport.')">
+        <h3>✈️ Airport Immigration</h3>
+        <p>Explain your travel plans, accommodations, and itinerary clearly.</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- TAB 4: AI Call Mode -->
+  <main id="tab-call" class="tab-view call-view">
+    <div id="callAvatar" class="avatar-ring">🤖</div>
+    <h2 id="callStatus">Tap start to begin your voice call</h2>
+    <button id="callToggleBtn" class="btn" style="padding: 12px 28px; font-size: 1rem;" onclick="toggleCallMode()">📞 Start Call</button>
+  </main>
+
+  <!-- Universal Footer -->
+  <footer id="chatFooter">
+    <button id="micBtn" class="btn btn-mic" type="button">🎤 Speak</button>
+    <input type="text" id="userInput" placeholder="Type or click Speak..." autocomplete="off" />
+    <button id="sendBtn" class="btn" type="button">Send</button>
   </footer>
 
   <script>
     const BACKEND_URL = "https://speakflow-proxy.chizovechikho.workers.dev";
-    const SYSTEM_PROMPT = "You are a friendly, encouraging English conversation tutor. Respond naturally in 1-2 punchy sentences. Correct minor grammatical mistakes gently if necessary, and always prompt the learner to keep the conversation flowing.";
+    let activeSystemPrompt = "You are a friendly English conversation tutor. Reply concisely in 1-2 punchy spoken sentences. Gently correct mistakes.";
 
     let conversation = [
-      { sender: "AI", text: "Hello! I'm your English tutor. What topic would you like to practice today?" }
+      { sender: "AI", text: "Hello! I am your English conversational tutor. What would you like to talk about today?" }
     ];
 
-    const chatLog = document.getElementById("chatLog");
-    const userInput = document.getElementById("userInput");
-    const sendBtn = document.getElementById("sendBtn");
-    const micBtn = document.getElementById("micBtn");
-    const statusText = document.getElementById("statusText");
     const voiceSelect = document.getElementById("voiceSelect");
-
     let availableVoices = [];
 
-    // --- Voice Management ---
     function loadVoices() {
       availableVoices = window.speechSynthesis.getVoices().filter(v => v.lang.startsWith("en"));
       voiceSelect.innerHTML = "";
-
-      if (availableVoices.length === 0) {
-        const opt = document.createElement("option");
-        opt.textContent = "Default Browser Voice";
-        voiceSelect.appendChild(opt);
-        return;
-      }
-
       availableVoices.forEach((voice, index) => {
-        const option = document.createElement("option");
-        option.value = index;
-        option.textContent = `${voice.name} (${voice.lang})`;
-        if (voice.name.includes("Natural") || voice.name.includes("Google") || voice.default) {
-          option.selected = true;
-        }
-        voiceSelect.appendChild(option);
+        const opt = document.createElement("option");
+        opt.value = index;
+        opt.textContent = `${voice.name} (${voice.lang})`;
+        if (voice.name.includes("Natural") || voice.name.includes("Google") || voice.default) opt.selected = true;
+        voiceSelect.appendChild(opt);
       });
     }
-
     loadVoices();
-    if (speechSynthesis.onvoiceschanged !== undefined) {
-      speechSynthesis.onvoiceschanged = loadVoices;
-    }
+    if (speechSynthesis.onvoiceschanged !== undefined) speechSynthesis.onvoiceschanged = loadVoices;
 
-    function speakText(text) {
+    function speakText(text, onComplete) {
       if (!("speechSynthesis" in window)) return;
       window.speechSynthesis.cancel();
-
-      const utterance = new SpeechSynthesisUtterance(text);
+      const utt = new SpeechSynthesisUtterance(text);
       const selectedIndex = parseInt(voiceSelect.value, 10);
-      if (availableVoices[selectedIndex]) {
-        utterance.voice = availableVoices[selectedIndex];
-      }
-      utterance.rate = 1.0;
-      utterance.pitch = 1.0;
-      window.speechSynthesis.speak(utterance);
+      if (availableVoices[selectedIndex]) utt.voice = availableVoices[selectedIndex];
+      utt.onend = () => { if (onComplete) onComplete(); };
+      window.speechSynthesis.speak(utt);
     }
 
-    // --- Chat Rendering ---
+    function switchTab(tabId) {
+      document.querySelectorAll(".tabs button").forEach(b => b.classList.remove("active"));
+      event.target.classList.add("active");
+      document.querySelectorAll(".tab-view").forEach(v => v.classList.remove("active"));
+      document.getElementById(`tab-${tabId}`).classList.add("active");
+      document.getElementById("chatFooter").style.display = (tabId === "call") ? "none" : "flex";
+    }
+
     function appendMessage(sender, text) {
+      const box = document.getElementById("tutorMessages");
       const bubble = document.createElement("div");
-      bubble.className = `message ${sender === "You" ? "user" : "ai"}`;
+      bubble.className = `bubble ${sender === "You" ? "user" : "ai"}`;
       bubble.textContent = text;
-      chatLog.appendChild(bubble);
-      chatLog.scrollTop = chatLog.scrollHeight;
+      box.appendChild(bubble);
+      box.scrollTop = box.scrollHeight;
     }
 
-    // --- Handle Sending Messages ---
-    async function handleSend() {
-      const text = userInput.value.trim();
-      if (!text) return;
-
-      appendMessage("You", text);
-      conversation.push({ sender: "You", text });
-      userInput.value = "";
-      userInput.disabled = true;
-      sendBtn.disabled = true;
-      statusText.textContent = "Tutor is thinking...";
+    async function sendChat(messageText) {
+      if (!messageText) return;
+      appendMessage("You", messageText);
+      conversation.push({ sender: "You", text: messageText });
 
       try {
         const res = await fetch(BACKEND_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            system_prompt: SYSTEM_PROMPT,
-            messages: conversation
-          })
+          body: JSON.stringify({ system_prompt: activeSystemPrompt, messages: conversation })
         });
-
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
-        const reply = data.reply || "Sorry, I couldn't process that.";
-
+        const reply = data.reply || data.error || "Could not process request.";
         appendMessage("AI", reply);
         conversation.push({ sender: "AI", text: reply });
         speakText(reply);
       } catch (err) {
-        appendMessage("AI", "Could not reach the server. Please verify the Cloudflare Worker setup.");
-        console.error(err);
-      } finally {
-        userInput.disabled = false;
-        sendBtn.disabled = false;
-        statusText.textContent = "";
-        userInput.focus();
+        appendMessage("AI", "Network error connecting to proxy.");
       }
     }
 
-    sendBtn.addEventListener("click", handleSend);
-    userInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") handleSend();
+    document.getElementById("sendBtn").addEventListener("click", () => {
+      const val = document.getElementById("userInput").value.trim();
+      if (val) {
+        document.getElementById("userInput").value = "";
+        sendChat(val);
+      }
     });
 
-    // --- Browser Speech Recognition (STT) ---
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    let recognition = null;
-    let isRecording = false;
-
-    if (SpeechRecognition) {
-      recognition = new SpeechRecognition();
-      recognition.continuous = false;
-      recognition.interimResults = false;
-      recognition.lang = "en-US";
-
-      recognition.onstart = () => {
-        isRecording = true;
-        micBtn.classList.add("recording");
-        micBtn.textContent = "🛑 Listening...";
-        statusText.textContent = "Listening to your voice...";
-      };
-
-      recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        userInput.value = transcript;
-        handleSend();
-      };
-
-      recognition.onerror = () => {
-        statusText.textContent = "Microphone error or permission denied.";
-      };
-
-      recognition.onend = () => {
-        isRecording = false;
-        micBtn.classList.remove("recording");
-        micBtn.textContent = "🎤 Talk";
-        if (statusText.textContent === "Listening to your voice...") {
-          statusText.textContent = "";
+    document.getElementById("userInput").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        const val = e.target.value.trim();
+        if (val) {
+          e.target.value = "";
+          sendChat(val);
         }
-      };
+      }
+    });
 
-      micBtn.addEventListener("click", () => {
-        if (isRecording) {
-          recognition.stop();
+    function startRoleplay(prompt) {
+      activeSystemPrompt = prompt;
+      conversation = [];
+      document.getElementById("tutorMessages").innerHTML = "";
+      document.querySelector(".tabs button:first-child").click();
+      sendChat("Hi, let's start the roleplay!");
+    }
+
+    function startTopic(text) {
+      document.querySelector(".tabs button:first-child").click();
+      sendChat(text);
+    }
+
+    // --- Speech Recognition ---
+    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let rec = SpeechRec ? new SpeechRec() : null;
+    let inCall = false;
+
+    if (rec) {
+      rec.continuous = false;
+      rec.interimResults = false;
+      rec.lang = "en-US";
+
+      rec.onresult = (e) => {
+        const transcript = e.results[0][0].transcript;
+        if (inCall) {
+          document.getElementById("callStatus").textContent = `You: "${transcript}"`;
+          handleCallExchange(transcript);
         } else {
-          window.speechSynthesis.cancel();
-          recognition.start();
+          document.getElementById("userInput").value = transcript;
+          sendChat(transcript);
         }
+      };
+
+      rec.onend = () => {
+        document.getElementById("micBtn").classList.remove("recording");
+        document.getElementById("micBtn").textContent = "🎤 Speak";
+      };
+
+      document.getElementById("micBtn").addEventListener("click", () => {
+        window.speechSynthesis.cancel();
+        document.getElementById("micBtn").classList.add("recording");
+        document.getElementById("micBtn").textContent = "🛑 Listening...";
+        rec.start();
       });
-    } else {
-      micBtn.style.display = "none";
+    }
+
+    function toggleCallMode() {
+      inCall = !inCall;
+      const btn = document.getElementById("callToggleBtn");
+      const ring = document.getElementById("callAvatar");
+      if (inCall) {
+        btn.textContent = "End Call";
+        btn.style.background = "#dc2626";
+        ring.classList.add("active");
+        document.getElementById("callStatus").textContent = "Listening to you...";
+        rec && rec.start();
+      } else {
+        btn.textContent = "📞 Start Call";
+        btn.style.background = "var(--accent)";
+        ring.classList.remove("active");
+        document.getElementById("callStatus").textContent = "Call ended.";
+        window.speechSynthesis.cancel();
+      }
+    }
+
+    async function handleCallExchange(spokenText) {
+      conversation.push({ sender: "You", text: spokenText });
+      document.getElementById("callStatus").textContent = "Thinking...";
+      try {
+        const res = await fetch(BACKEND_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ system_prompt: activeSystemPrompt, messages: conversation })
+        });
+        const data = await res.json();
+        const reply = data.reply || "Could you repeat that?";
+        conversation.push({ sender: "AI", text: reply });
+        document.getElementById("callStatus").textContent = reply;
+        speakText(reply, () => {
+          if (inCall && rec) {
+            document.getElementById("callStatus").textContent = "Listening...";
+            rec.start();
+          }
+        });
+      } catch {
+        document.getElementById("callStatus").textContent = "Call connection error.";
+      }
     }
   </script>
 </body>
