@@ -57,7 +57,9 @@
     .hint-chip { background: #1e1b4b; border: 1px dashed #6366f1; color: #c7d2fe; font-size: 0.85rem; padding: 8px 14px; border-radius: 10px; cursor: pointer; text-align: left; line-height: 1.4; transition: background 0.15s; }
     .hint-chip:hover { background: #312e81; color: #fff; }
 
-    /* Clean Roleplay Scaffolding */
+    /* Passive Read-Only Hints for Voice Calls */
+    .call-hint-passive { background: #1e1b4b; border: 1px dashed #6366f1; color: #e0e7ff; font-size: 0.9rem; padding: 10px 16px; border-radius: 10px; text-align: left; width: 100%; cursor: default; user-select: text; }
+
     .roleplay-top-bar { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; max-width: 960px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 12px; }
     .roleplay-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 999; display: none; align-items: center; justify-content: center; padding: 20px; }
     .roleplay-modal { background: var(--card); border: 1px solid var(--border); border-radius: 12px; width: 100%; max-width: 800px; max-height: 80vh; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
@@ -112,16 +114,15 @@
         <p id="stageObjective" style="color: var(--text-muted); font-size: 0.85rem;">Master morning, afternoon, evening, night, lunch &amp; breakfast terms.</p>
       </div>
       <div style="display: flex; gap: 8px;">
-        <button id="startJourneyBtn" class="btn" onclick="startStageLesson()">🚀 Start Stage</button>
-        <button class="btn-sm" style="background: #4338ca;" onclick="advanceStage()">Next ⏩</button>
+        <button id="startJourneyBtn" class="btn" style="background: #10b981;" onclick="startStageLesson()">▶️ Start Daily Session</button>
+        <button class="btn-sm" style="background: #4338ca;" onclick="advanceStage()">Next Stage ⏩</button>
       </div>
     </div>
 
-    <div class="chat-box-card">
+    <!-- Hidden until Start Daily Session is clicked -->
+    <div id="journeyCoachContainer" class="chat-box-card" style="display: none;">
       <h3 style="font-size: 0.95rem; color: #cbd5e1; margin-bottom: 8px;">Interactive Mission Coach</h3>
-      <div id="journeyChatMessages" class="chat-messages">
-        <div class="bubble ai">Click "Start Stage" above when you are ready to begin today's lesson.</div>
-      </div>
+      <div id="journeyChatMessages" class="chat-messages"></div>
       <div id="journeyHints" class="hints-wrapper"></div>
       <div class="inline-chat-bar">
         <button id="journeyMicBtn" class="btn btn-mic" onclick="toggleSpeechRec('journey')">🎤 Speak</button>
@@ -198,18 +199,18 @@
     </div>
   </main>
 
-  <!-- TAB 3: Roleplay (Clean Interface + 50 Modal + Custom Builder) -->
+  <!-- TAB 3: Roleplay Section -->
   <main id="tab-roleplay" class="tab-view">
     <div class="roleplay-top-bar">
       <div>
-        <label style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; display: block; margin-bottom: 4px;">1. TYPE ANY SCENARIO:</label>
+        <label style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; display: block; margin-bottom: 4px;">1. TYPE ANY CUSTOM SCENARIO:</label>
         <div style="display: flex; gap: 8px;">
-          <input type="text" id="customRoleplayInput" placeholder="e.g. You are a mechanic explaining my brake problems..." />
+          <input type="text" id="customRoleplayInput" placeholder="e.g. You are an auto mechanic explaining my car repair..." />
           <button class="btn" onclick="startCustomScenario()">Launch Custom</button>
         </div>
       </div>
       <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 10px;">
-        <span style="font-size: 0.85rem; color: var(--text-muted);">Prefer a structured setup?</span>
+        <span style="font-size: 0.85rem; color: var(--text-muted);">Want a realistic everyday situation?</span>
         <button class="btn-sm" style="background: #312e81; border-color: #6366f1;" onclick="openRoleplayModal()">📂 Browse 50+ Real-World Roleplays</button>
       </div>
     </div>
@@ -217,7 +218,7 @@
     <div class="chat-box-card">
       <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 8px;">
         <div>
-          <span style="font-size: 0.75rem; color: var(--text-muted); display: block;">CURRENT SCENARIO</span>
+          <span style="font-size: 0.75rem; color: var(--text-muted); display: block;">ACTIVE ROLEPLAY</span>
           <strong id="activeRoleplayHeader" style="color: #818cf8; font-size: 1rem;">☕ Coffee Shop Order</strong>
         </div>
         <p id="activeRoleplayDesc" style="font-size: 0.85rem; color: var(--text-muted);">Ordering beverages and breakfast.</p>
@@ -226,7 +227,7 @@
       <div id="roleplayHints" class="hints-wrapper"></div>
       <div class="inline-chat-bar">
         <button id="roleplayMicBtn" class="btn btn-mic" onclick="toggleSpeechRec('roleplay')">🎤 Speak</button>
-        <input type="text" id="roleplayInput" placeholder="Speak your reply or click a dynamic hint..." />
+        <input type="text" id="roleplayInput" placeholder="Speak your reply or click a hint..." />
         <button class="btn" onclick="sendRoleplayChat()">Send</button>
       </div>
     </div>
@@ -238,13 +239,13 @@
           <h3 style="font-size: 1.1rem; color: #cbd5e1;">Select from 50+ Roleplay Scenarios</h3>
           <button class="btn-sm" onclick="closeRoleplayModal()">Close ✕</button>
         </div>
-        <input type="text" id="roleplaySearchInput" oninput="filterRoleplays()" placeholder="Search scenarios (e.g. doctor, interview, airport)..." style="width: 100%; margin-bottom: 10px;" />
+        <input type="text" id="roleplaySearchInput" oninput="filterRoleplays()" placeholder="Search scenarios (e.g. salary, airport, doctor)..." style="width: 100%; margin-bottom: 10px;" />
         <div id="roleplayModalGrid" class="roleplay-grid"></div>
       </div>
     </div>
   </main>
 
-  <!-- TAB 4: Dedicated AI Call with Continuous Mic -->
+  <!-- TAB 4: Dedicated AI Call Mode -->
   <main id="tab-call" class="tab-view call-view">
     <div id="callAvatar" class="avatar-ring">📞</div>
     <div id="callStatus" class="call-transcript">Tap "Start Call" to begin speaking with your AI friend.</div>
@@ -287,7 +288,7 @@
   <script>
     const BACKEND_URL = "https://speakflow-proxy.chizovechikho.workers.dev";
 
-    // --- 1. Streak Counter ---
+    // --- 1. Streak Tracker ---
     function checkDailyStreak() {
       const today = new Date().toDateString();
       const lastVisit = localStorage.getItem("speakflow_last_date");
@@ -462,7 +463,7 @@
       box.scrollTop = box.scrollHeight;
     }
 
-    // --- 6. Dynamic Hint Parsing Engine ---
+    // --- 6. Robust Dynamic Suggestion Parser & Contextual Fallback ---
     function parseAIResponseWithHints(rawText) {
       let speechPart = rawText;
       let hints = [];
@@ -470,10 +471,44 @@
       if (rawText.includes("SUGGESTIONS:")) {
         const parts = rawText.split("SUGGESTIONS:");
         speechPart = parts[0].trim();
-        const hintsRaw = parts[1].trim();
-        hints = hintsRaw.split("\n")
+        hints = parts[1].trim().split("\n")
           .map(h => h.replace(/^[-*0-9.]+\s*/, '').replace(/^"|"$/g, '').trim())
-          .filter(h => h.length > 3);
+          .filter(h => h.length > 2);
+      }
+
+      if (hints.length === 0) {
+        const lower = speechPart.toLowerCase();
+        if (lower.includes("salary") || lower.includes("number") || lower.includes("factor") || lower.includes("compensat")) {
+          hints = [
+            "My expectations are based on my past experience and current market research.",
+            "I am considering the full scope of duties and technical impact for this position.",
+            "I remain flexible depending on the overall benefits and growth opportunities."
+          ];
+        } else if (lower.includes("lunch") || lower.includes("eat") || lower.includes("food") || lower.includes("breakfast")) {
+          hints = [
+            "For lunch I usually have rice and steamed vegetables.",
+            "I had a quick chicken sandwich with some juice today.",
+            "I normally eat lunch around one in the afternoon."
+          ];
+        } else if (lower.includes("where") || lower.includes("live") || lower.includes("from")) {
+          hints = [
+            "I live downtown near the city center.",
+            "I am from a quiet town in the hills, but I work here now.",
+            "I moved here a few years ago for my career."
+          ];
+        } else if (lower.includes("routine") || lower.includes("wake") || lower.includes("time")) {
+          hints = [
+            "I usually wake up at seven in the morning.",
+            "I start my day by having coffee and checking daily tasks.",
+            "I try to finish my work and sleep by eleven at night."
+          ];
+        } else {
+          hints = [
+            "Could you explain that in a slightly different way?",
+            "Yes, that makes complete sense to me.",
+            "What would you suggest as the next step?"
+          ];
+        }
       }
 
       return { speech: cleanSpokenDialogue(speechPart), hints: hints.slice(0, 3) };
@@ -482,8 +517,6 @@
     function renderHints(containerId, hints, onSelect) {
       const box = document.getElementById(containerId);
       box.innerHTML = "";
-      if (!hints || hints.length === 0) return;
-
       hints.forEach(h => {
         const chip = document.createElement("button");
         chip.className = "hint-chip";
@@ -500,7 +533,8 @@
       const stageData = STAGES.find(s => s.id === currentStage) || STAGES[0];
       journeyHistory = [];
       document.getElementById("journeyChatMessages").innerHTML = "";
-      document.getElementById("startJourneyBtn").style.display = "none";
+      document.getElementById("journeyCoachContainer").style.display = "flex";
+      document.getElementById("startJourneyBtn").textContent = "🔄 Restart Stage";
       sendJourneyChat(stageData.prompt);
     }
 
@@ -516,7 +550,11 @@
       if (!customText) appendMessage("journeyChatMessages", "You", text);
       journeyHistory.push({ sender: customText ? "System" : "You", text });
 
-      const prompt = `You are a patient English tutor teaching Stage ${currentStage} of 100 (${document.getElementById('stageObjective').textContent}). Give direct spoken dialogue only (1-2 sentences). Then on a new line output SUGGESTIONS: followed by 2-3 realistic answers answering your specific question so the student knows what to say.`;
+      const prompt = `You are an English tutor teaching Stage ${currentStage} of 100 (${document.getElementById('stageObjective').textContent}).
+RULES:
+1. Speak in natural conversational dialogue (max 2 sentences).
+2. Never output text in parentheses or stage actions.
+3. CRITICAL: Always end your response on a new line with 'SUGGESTIONS:' followed by 2-3 realistic complete sentences the student can say next to answer your question.`;
 
       try {
         const res = await fetch(BACKEND_URL, {
@@ -525,7 +563,7 @@
           body: JSON.stringify({ system_prompt: prompt, messages: journeyHistory })
         });
         const data = await res.json();
-        const { speech, hints } = parseAIResponseWithHints(data.reply || "Let us continue.");
+        const { speech, hints } = parseAIResponseWithHints(data.reply || "Let us continue our lesson.");
 
         appendMessage("journeyChatMessages", "AI", speech);
         journeyHistory.push({ sender: "AI", text: speech });
@@ -581,13 +619,13 @@
       }
     }
 
-    // --- 9. TAB 3: 50+ Roleplays Catalog & Custom Builder ---
+    // --- 9. TAB 3: 50+ Roleplays Catalog & Dynamic Suggestions ---
     const ROLEPLAYS_50 = [
       { id: "cafe_order", title: "☕ Coffee Shop Order", desc: "Order coffee, milk substitutions & snacks", role: "You are an artisan barista taking a customer's drink and pastry order." },
       { id: "tech_interview", title: "💼 Tech Screening Interview", desc: "Technical interview on Git rebasing, APIs & architecture", role: "You are a senior tech interviewer asking practical questions about Git rebasing, APIs, and software architecture." },
+      { id: "salary_negotiation", title: "💰 Salary Negotiation", desc: "Negotiating an employment offer with HR", role: "You are an HR Director discussing salary expectations and factors with a candidate." },
       { id: "airport_immigration", title: "✈️ Airport Immigration", desc: "Explain travel itinerary, lodging & return flights", role: "You are a border control officer checking visitor passports, return tickets, and lodging." },
       { id: "hotel_checkin", title: "🏨 Hotel Check-In", desc: "Late check-in, room key card & breakfast details", role: "You are a hotel front desk clerk welcoming a guest and handing over room keys." },
-      { id: "salary_negotiation", title: "💰 Salary Negotiation", desc: "Negotiating an employment offer with HR", role: "You are an HR Director discussing salary expectations with a promising candidate." },
       { id: "restaurant_dinner", title: "🍽️ Restaurant Dining", desc: "Ordering dinner, daily specials & allergy options", role: "You are a waiter at an Italian restaurant explaining specials and taking orders." },
       { id: "fast_food", title: "🍔 Drive-Thru / Fast Food", desc: "Rapid combo ordering & condiment requests", role: "You are a fast-food cashier taking a drive-thru combo order." },
       { id: "grocery_checkout", title: "🛒 Supermarket Checkout", desc: "Discounts, reusable bags & payment questions", role: "You are a supermarket cashier checking out groceries and asking for payment." },
@@ -716,7 +754,7 @@
 RULES:
 1. Speak in natural, direct dialogue (max 2 sentences).
 2. NO physical actions, stage notes, or text in parentheses.
-3. Crucially: On a new line, write 'SUGGESTIONS:' followed by 2-3 realistic answers tailored directly to what you just asked so the user knows what to reply next.`;
+3. CRITICAL: On a new line, write 'SUGGESTIONS:' followed by 2-3 realistic answers tailored directly to what you just asked so the user knows what to reply next.`;
 
       try {
         const res = await fetch(BACKEND_URL, {
@@ -737,19 +775,17 @@ RULES:
       }
     }
 
-    // --- 10. TAB 4: Dedicated AI Call with Continuous Mic Watchdog ---
+    // --- 10. TAB 4: Dedicated AI Call (Silent Hints & Persistent Mic Loop) ---
     let callHistory = [];
     let inCall = false;
     let thinkingTimer = null;
-    let callMicWatchdog = null;
     let latestCallHints = [];
 
-    const CALL_PROMPT = `You are a close friend chatting on a phone call.
+    const CALL_PROMPT = `You are a friend chatting on an active phone call.
 RULES:
-1. Speak casually in 1-2 spoken sentences.
-2. NO actions in parentheses.
-3. If the user asks you to pick a topic, bring up a fun, everyday subject.
-4. On a new line, write 'SUGGESTIONS:' followed by 2-3 natural sentences answering your question so the user can read one aloud if stuck.`;
+1. Speak casually in 1-2 short spoken sentences.
+2. NO actions or descriptions in parentheses or asterisks.
+3. Crucial: End your response on a new line with 'SUGGESTIONS:' followed by 2-3 short, natural sentences the user could say back to you.`;
 
     function toggleCallMode() {
       inCall = !inCall;
@@ -758,7 +794,6 @@ RULES:
       const statusText = document.getElementById("callStatus");
 
       clearTimeout(thinkingTimer);
-      clearInterval(callMicWatchdog);
       document.getElementById("callTimerNotice").textContent = "";
       document.getElementById("callHintsContainer").innerHTML = "";
 
@@ -767,42 +802,48 @@ RULES:
         btn.style.background = "#dc2626";
         ring.classList.add("active");
 
-        const greeting = "Hey! It's me. How are you doing today?";
+        const greeting = "Hey, it's me! Did you call? How are you doing today?";
         callHistory = [{ sender: "AI", text: greeting }];
         statusText.textContent = greeting;
         latestCallHints = [
-          "I'm doing well! How about you?",
-          "Pretty busy day today. What have you been up to?",
-          "Can you pick a fun topic for us to talk about?"
+          "Hey! I'm doing well, just wanted to catch up.",
+          "I had a pretty busy day! What have you been up to?",
+          "Can you pick a fun topic for us to chat about?"
         ];
 
+        // The AI speaks ONLY the greeting, never the suggestions
         speakText(greeting, () => startCallListeningLoop());
       } else {
         btn.textContent = "📞 Start Call";
         btn.style.background = "var(--accent)";
         ring.classList.remove("active", "pulsing");
         statusText.textContent = "Call ended.";
+        document.getElementById("callHintsContainer").innerHTML = "";
         window.speechSynthesis.cancel();
+        if (rec) rec.abort();
       }
+    }
+
+    function renderPassiveCallHints(hints) {
+      const box = document.getElementById("callHintsContainer");
+      box.innerHTML = "";
+      hints.forEach(h => {
+        const item = document.createElement("div");
+        item.className = "call-hint-passive";
+        item.textContent = `🗣️ Idea to speak: "${h}"`;
+        box.appendChild(item);
+      });
     }
 
     function startCallListeningLoop() {
       if (!inCall) return;
       const ring = document.getElementById("callAvatar");
       ring.classList.add("pulsing");
-      document.getElementById("callStatus").textContent = "Listening... (Take your time)";
+      document.getElementById("callStatus").textContent = "Listening... (Take your time, speak whenever ready)";
       document.getElementById("callHintsContainer").innerHTML = "";
 
-      // Start continuous listening immediately
       safeStartRec();
 
-      // Watchdog: ensures browser mic never drops out
-      clearInterval(callMicWatchdog);
-      callMicWatchdog = setInterval(() => {
-        if (inCall) safeStartRec();
-      }, 2500);
-
-      // 10-Second Thinking Timer
       let secondsLeft = 10;
       document.getElementById("callTimerNotice").textContent = `Thinking time: ${secondsLeft}s`;
 
@@ -814,8 +855,8 @@ RULES:
           document.getElementById("callTimerNotice").textContent = `Thinking time: ${secondsLeft}s`;
         } else {
           clearInterval(thinkingTimer);
-          document.getElementById("callTimerNotice").textContent = "💡 Need an idea? Read one aloud (mic is live):";
-          renderHints("callHintsContainer", latestCallHints, (hint) => handleCallExchange(hint));
+          document.getElementById("callTimerNotice").textContent = "💡 Ideas for what to say (read aloud whenever you're ready):";
+          renderPassiveCallHints(latestCallHints);
         }
       }, 1000);
     }
@@ -823,7 +864,6 @@ RULES:
     async function handleCallExchange(spokenText) {
       if (!inCall) return;
       clearTimeout(thinkingTimer);
-      clearInterval(callMicWatchdog);
       document.getElementById("callTimerNotice").textContent = "";
       document.getElementById("callHintsContainer").innerHTML = "";
       document.getElementById("callAvatar").classList.remove("pulsing");
@@ -840,7 +880,7 @@ RULES:
         });
         const data = await res.json();
         const { speech, hints } = parseAIResponseWithHints(data.reply || "Could you say that once more?");
-        latestCallHints = hints.length ? hints : ["Tell me more about that.", "What do you think about it?", "Let's talk about movies!"];
+        latestCallHints = hints;
 
         callHistory.push({ sender: "AI", text: speech });
         document.getElementById("callStatus").textContent = speech;
@@ -851,7 +891,7 @@ RULES:
       }
     }
 
-    // --- 11. Speech Recognition Engine ---
+    // --- 11. Continuous Speech Recognition Engine ---
     const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
     let rec = SpeechRec ? new SpeechRec() : null;
     let activeRecTarget = "journey";
@@ -872,7 +912,15 @@ RULES:
             btn.textContent = "🎤 Speak";
           }
         });
-        if (inCall) safeStartRec();
+        if (inCall) {
+          setTimeout(() => safeStartRec(), 200);
+        }
+      };
+
+      rec.onerror = (e) => {
+        if (inCall && e.error !== "aborted") {
+          setTimeout(() => safeStartRec(), 500);
+        }
       };
 
       rec.onresult = (e) => {
