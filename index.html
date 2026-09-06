@@ -48,7 +48,7 @@
 
       <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
         <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider">Daily Speaking Challenge</span>
-        <p class="text-sm font-medium mt-1" id="missionPrompt">Describe one challenge you faced this week and how you resolved it. Speak for at least 15 seconds.</p>
+        <p class="text-sm font-medium mt-1" id="missionPrompt">Describe one challenge you faced this week and how you resolved it. Speak at your own pace.</p>
         
         <div class="mt-4 flex items-center gap-3">
           <button id="missionMicBtn" onclick="toggleMissionRecording()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-4 py-2 rounded-lg transition flex items-center gap-2">
@@ -57,7 +57,7 @@
         </div>
         
         <div class="mt-3 p-3 bg-slate-950 border border-slate-800 rounded-lg text-xs text-slate-300 min-h-[50px]" id="missionTranscript">
-          Click the mic and speak aloud to complete your challenge...
+          Click the mic and speak aloud whenever you're ready... Take your time.
         </div>
 
         <div id="missionFeedback" class="hidden mt-3 p-3 bg-indigo-950/40 border border-indigo-900/50 rounded-lg">
@@ -118,7 +118,7 @@
       <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
         <label class="block text-xs font-bold text-indigo-400 uppercase tracking-wider mb-2">Create Custom Scenario</label>
         <div class="flex gap-2">
-          <input type="text" id="customRpInput" placeholder="E.g., Returning a defective laptop at an electronics store..." class="flex-1 bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-indigo-500">
+          <input type="text" id="customRpInput" placeholder="E.g., Asking for directions in London..." class="flex-1 bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-indigo-500">
           <button onclick="applyCustomScenario()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-2 rounded-lg text-xs font-semibold transition">Set Scenario</button>
         </div>
       </div>
@@ -140,25 +140,25 @@
   </main>
 
   <script>
-    // --- Level-Based Content ---
+    // --- Level Configuration ---
     const levelContent = {
       Beginner: {
         word: "Frequent",
         def: "Happening often or regularly.",
         example: "I am a frequent visitor to the library.",
-        prompt: "Introduce yourself. What is your name, where are you from, and what is your favorite hobby? Speak for 15 seconds."
+        prompt: "Introduce yourself. What is your name, where are you from, and what do you like to do in your free time?"
       },
       Intermediate: {
         word: "Resilient",
         def: "Able to withstand or recover quickly from difficult conditions.",
         example: "Local businesses remained resilient during the economic downturn.",
-        prompt: "Describe one challenge you faced this week and how you resolved it. Speak for at least 15 seconds."
+        prompt: "Describe one challenge you faced this week and how you resolved it."
       },
       Advanced: {
         word: "Pragmatic",
-        def: "Dealing with things sensibly and realistically in a way that is based on practical rather than theoretical considerations.",
+        def: "Dealing with things sensibly and realistically based on practical considerations.",
         example: "We took a pragmatic approach to optimizing our application's performance.",
-        prompt: "Articulate the trade-offs between moving quickly and writing clean code in software engineering. Speak for at least 20 seconds."
+        prompt: "Discuss the trade-offs between moving fast and maintaining high quality in software engineering."
       }
     };
 
@@ -172,7 +172,7 @@
       document.getElementById('levelBadge').innerText = selected;
     }
 
-    // --- 52 Categorized Scenarios ---
+    // --- 52 Situations Database ---
     const scenariosData = [
       {
         category: "Food, Dining & Cafes",
@@ -265,11 +265,13 @@
       }
     ];
 
-    // --- State Management ---
+    // --- State Variables ---
     let recognition = null;
     let synth = window.speechSynthesis;
     let isCallActive = false;
     let isRpActive = false;
+    let isAwaitingVoice = false; // Prevents unwanted loops while AI is speaking
+
     let currentRp = {
       title: "Ordering Coffee",
       role: "Barista",
@@ -277,14 +279,49 @@
       prompt: "Welcome to Sunrise Cafe! What coffee can I brew for you today?"
     };
 
+    // --- Speech Recognition Setup with No-Timeout Loop ---
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (SpeechRecognition) {
       recognition = new SpeechRecognition();
       recognition.continuous = false;
       recognition.interimResults = false;
       recognition.lang = 'en-US';
+
+      // Always auto-restart if disconnected while awaiting user voice
+      recognition.onend = () => {
+        if (isAwaitingVoice) {
+          setTimeout(() => {
+            if (isAwaitingVoice) safeStartRecognition();
+          }, 250);
+        }
+      };
+
+      recognition.onerror = (e) => {
+        // Ignored no-speech timeouts completely so beginners can think indefinitely
+        if (isAwaitingVoice) {
+          setTimeout(() => {
+            if (isAwaitingVoice) safeStartRecognition();
+          }, 250);
+        }
+      };
     }
 
+    function safeStartRecognition() {
+      try {
+        recognition.start();
+      } catch (err) {
+        // Ignore if already active
+      }
+    }
+
+    function safeStopRecognition() {
+      isAwaitingVoice = false;
+      try {
+        recognition.stop();
+      } catch (err) {}
+    }
+
+    // --- Tab Switcher ---
     function switchTab(tabId) {
       ['missions', 'call', 'roleplay'].forEach(t => {
         document.getElementById(`view-${t}`).classList.add('hidden');
@@ -299,10 +336,12 @@
 
     function speakText(text, callback) {
       if (!synth) return;
+      safeStopRecognition(); // Silence mic while speaker speaks
       synth.cancel();
+
       const utterance = new SpeechSynthesisUtterance(text);
       const level = document.getElementById('levelSelect').value;
-      utterance.rate = level === 'Beginner' ? 0.85 : (level === 'Advanced' ? 1.05 : 0.95);
+      utterance.rate = level === 'Beginner' ? 0.82 : (level === 'Advanced' ? 1.05 : 0.95);
       utterance.pitch = 1.0;
       utterance.onend = () => { if (callback) callback(); };
       synth.speak(utterance);
@@ -327,14 +366,14 @@
       status.innerText = "Connected • Alex is speaking...";
       pulse.classList.remove('hidden');
 
-      const greeting = "Hey there! How has your day been going?";
+      const greeting = "Hey there! Take your time, there's no rush at all. How has your day been?";
       appendLog('callLogs', 'Alex', greeting);
       speakText(greeting, () => listenForCall());
     }
 
     function endFriendCall() {
       isCallActive = false;
-      if (recognition) recognition.stop();
+      safeStopRecognition();
       if (synth) synth.cancel();
 
       const btn = document.getElementById('callToggleBtn');
@@ -352,28 +391,28 @@
 
     function listenForCall() {
       if (!isCallActive || !recognition) return;
-      document.getElementById('callStatus').innerText = "Listening to you...";
+      document.getElementById('callStatus').innerText = "Listening... Take all the time you need to think.";
+      isAwaitingVoice = true;
 
-      recognition.start();
       recognition.onresult = (e) => {
+        isAwaitingVoice = false;
         const text = e.results[0][0].transcript;
         appendLog('callLogs', 'You', text);
         document.getElementById('callStatus').innerText = "Thinking...";
-        setTimeout(() => generateFriendReply(text), 500);
+        setTimeout(() => generateFriendReply(text), 450);
       };
-      recognition.onerror = () => {
-        if (isCallActive) document.getElementById('callStatus').innerText = "Listening paused. Speak clearly...";
-      };
+
+      safeStartRecognition();
     }
 
     function generateFriendReply(userInput) {
       if (!isCallActive) return;
-      let reply = "That sounds interesting! What makes you say that?";
+      let reply = "That makes a lot of sense! Tell me more about that.";
       const lower = userInput.toLowerCase();
-      if (lower.includes("tired") || lower.includes("exhausted")) {
-        reply = "Make sure to rest up tonight. Did you have a busy schedule?";
-      } else if (lower.includes("app") || lower.includes("code") || lower.includes("project")) {
-        reply = "Building software is rewarding. How is the progress coming along?";
+      if (lower.includes("tired") || lower.includes("exhausted") || lower.includes("sleep")) {
+        reply = "Rest is important. Have you had a very packed schedule recently?";
+      } else if (lower.includes("app") || lower.includes("build") || lower.includes("code") || lower.includes("project")) {
+        reply = "Building your own projects is the best way to learn! What part of it are you working on right now?";
       }
 
       appendLog('callLogs', 'Alex', reply);
@@ -406,7 +445,7 @@
 
     function endRoleplaySession() {
       isRpActive = false;
-      if (recognition) recognition.stop();
+      safeStopRecognition();
       if (synth) synth.cancel();
 
       const btn = document.getElementById('rpToggleBtn');
@@ -422,31 +461,31 @@
 
     function listenForRoleplay() {
       if (!isRpActive || !recognition) return;
-      document.getElementById('rpActiveStatus').innerText = "Listening to your response...";
+      document.getElementById('rpActiveStatus').innerText = "Listening... Take your time to reply.";
+      isAwaitingVoice = true;
 
-      recognition.start();
       recognition.onresult = (e) => {
+        isAwaitingVoice = false;
         const text = e.results[0][0].transcript;
         appendLog('rpLogs', 'You', text);
         document.getElementById('rpActiveStatus').innerText = "AI is responding...";
-        setTimeout(() => generateRoleplayReply(text), 500);
+        setTimeout(() => generateRoleplayReply(text), 450);
       };
-      recognition.onerror = () => {
-        if (isRpActive) document.getElementById('rpActiveStatus').innerText = "Paused. Speak into microphone.";
-      };
+
+      safeStartRecognition();
     }
 
     function generateRoleplayReply(userInput) {
       if (!isRpActive) return;
-      let reply = `Understood. Let's proceed with that right away.`;
+      let reply = `Understood! I will take care of that for you right now.`;
       const lower = userInput.toLowerCase();
 
-      if (lower.includes("size") || lower.includes("large") || lower.includes("medium")) {
-        reply = "Got it. Would you like anything else to accompany that?";
-      } else if (lower.includes("price") || lower.includes("cost") || lower.includes("how much")) {
-        reply = "That comes out to 15 dollars total. How will you be paying today?";
-      } else if (lower.includes("problem") || lower.includes("issue") || lower.includes("broken")) {
-        reply = "I understand your concern. Let me pull up your account to resolve this immediately.";
+      if (lower.includes("size") || lower.includes("large") || lower.includes("medium") || lower.includes("small")) {
+        reply = "Got it. Would you like anything else to accompany that today?";
+      } else if (lower.includes("price") || lower.includes("cost") || lower.includes("pay") || lower.includes("card")) {
+        reply = "That will be 12 dollars total. Tap or insert your card whenever you are ready.";
+      } else if (lower.includes("help") || lower.includes("where") || lower.includes("how")) {
+        reply = "Of course! Walk down the main hall and you will see it directly on your left.";
       }
 
       appendLog('rpLogs', currentRp.role, reply);
@@ -475,7 +514,7 @@
         title: text,
         role: "Partner",
         avatar: "✍️",
-        prompt: `Let's begin this scenario: "${text}". How would you like to start?`
+        prompt: `Let's begin this scenario: "${text}". How would you like to start? Take your time.`
       };
       document.getElementById('rpActiveTitle').innerText = currentRp.title;
       document.getElementById('rpActiveAvatar').innerText = currentRp.avatar;
@@ -483,6 +522,7 @@
       input.value = "";
     }
 
+    // --- Directory Rendering ---
     function renderScenarios() {
       const container = document.getElementById('scenariosContainer');
       container.innerHTML = "";
@@ -527,35 +567,36 @@
       container.scrollTop = container.scrollHeight;
     }
 
-    // --- 3. DAILY MISSIONS ---
+    // --- 3. DAILY MISSIONS LOGIC ---
     let isMissionRecording = false;
     function toggleMissionRecording() {
       if (!recognition) return;
       if (isMissionRecording) {
-        recognition.stop();
+        safeStopRecognition();
         return;
       }
 
       const transcriptBox = document.getElementById('missionTranscript');
       const statusBtn = document.getElementById('missionMicStatus');
-      transcriptBox.innerText = "Listening... Speak now.";
+      transcriptBox.innerText = "Listening... Take your time and speak.";
       statusBtn.innerText = "⏹️ Stop Recording";
       isMissionRecording = true;
+      isAwaitingVoice = true;
 
-      recognition.start();
       recognition.onresult = (event) => {
+        isAwaitingVoice = false;
         const spoken = event.results[0][0].transcript;
         transcriptBox.innerText = `"${spoken}"`;
         document.getElementById('missionFeedback').classList.remove('hidden');
-        document.getElementById('missionFeedbackText').innerHTML = "Sentence spoken clearly! Good cadence and vocabulary.";
-      };
-      recognition.onend = () => {
+        document.getElementById('missionFeedbackText').innerHTML = "Clear pronunciation! Great job articulating your thoughts.";
         statusBtn.innerText = "🎙️ Start Speaking";
         isMissionRecording = false;
       };
+
+      safeStartRecognition();
     }
 
-    // Initial render
+    // Initialize content
     renderScenarios();
   </script>
 </body>
