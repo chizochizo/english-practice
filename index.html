@@ -33,7 +33,6 @@
     .tab-view { flex: 1; display: none; overflow-y: auto; padding: 16px 20px; flex-direction: column; gap: 16px; }
     .tab-view.active { display: flex; }
 
-    /* Cards & Scaffolding */
     .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; max-width: 960px; margin: 0 auto; width: 100%; }
     .feature-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; justify-content: space-between; }
     .feature-card h3 { color: #e2e8f0; font-size: 1.05rem; margin-bottom: 6px; }
@@ -44,30 +43,29 @@
     .btn-sm { padding: 6px 12px; font-size: 0.8rem; border-radius: 6px; border: 1px solid var(--border); background: #1e293b; color: var(--text); cursor: pointer; }
     .btn-sm:hover { background: var(--accent); }
 
-    /* Journey Dashboard & Game Level */
-    .journey-container { max-width: 900px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 14px; }
-    .stage-banner { background: linear-gradient(135deg, #1e1b4b 0%, #172554 100%); border: 1px solid #4338ca; border-radius: 12px; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+    .stage-banner { background: linear-gradient(135deg, #1e1b4b 0%, #172554 100%); border: 1px solid #4338ca; border-radius: 12px; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; max-width: 960px; margin: 0 auto; width: 100%; }
     .stage-badge { background: #312e81; color: #a5b4fc; font-weight: 700; padding: 6px 14px; border-radius: 8px; font-size: 0.95rem; border: 1px solid #4f46e5; }
     .streak-badge { background: #1f2937; border: 1px solid #d97706; color: #fbbf24; padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; }
 
-    .chat-box-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; flex: 1; min-height: 380px; }
+    .chat-box-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; flex: 1; min-height: 380px; max-width: 960px; margin: 0 auto; width: 100%; }
     .chat-messages { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding: 10px 0; max-height: 380px; }
     .bubble { max-width: 80%; padding: 10px 14px; border-radius: 10px; font-size: 0.95rem; line-height: 1.4; }
     .bubble.user { align-self: flex-end; background: var(--bubble-user); }
     .bubble.ai { align-self: flex-start; background: var(--bubble-ai); }
 
-    .hints-wrapper { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; min-height: 34px; }
-    .hint-chip { background: #1e1b4b; border: 1px dashed #6366f1; color: #c7d2fe; font-size: 0.8rem; padding: 6px 12px; border-radius: 16px; cursor: pointer; transition: background 0.15s; }
+    .hints-wrapper { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; width: 100%; }
+    .hint-chip { background: #1e1b4b; border: 1px dashed #6366f1; color: #c7d2fe; font-size: 0.85rem; padding: 8px 14px; border-radius: 10px; cursor: pointer; text-align: left; line-height: 1.4; transition: background 0.15s; }
     .hint-chip:hover { background: #312e81; color: #fff; }
 
-    /* Call Mode */
+    .custom-roleplay-box { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; max-width: 960px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 12px; }
+    .custom-roleplay-input { display: flex; gap: 10px; }
+
     .call-view { align-items: center; justify-content: center; text-align: center; gap: 18px; }
     .avatar-ring { width: 130px; height: 130px; border-radius: 50%; background: #1e1b4b; border: 3px solid #6366f1; display: flex; align-items: center; justify-content: center; font-size: 3rem; margin: 0 auto; transition: all 0.3s ease; }
     .avatar-ring.active { transform: scale(1.08); box-shadow: 0 0 30px rgba(99, 102, 241, 0.6); }
     .call-transcript { max-width: 600px; font-size: 1.15rem; line-height: 1.5; font-weight: 500; min-height: 50px; }
-    .thinking-timer { font-size: 0.8rem; color: #94a3b8; margin-top: 4px; }
+    .thinking-timer { font-size: 0.85rem; color: #818cf8; font-weight: 600; min-height: 20px; }
 
-    /* Section Inputs */
     .inline-chat-bar { display: flex; gap: 8px; margin-top: 10px; }
     input[type="text"] { flex: 1; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; outline: none; font-size: 0.95rem; }
     .btn { background: var(--accent); color: white; border: none; border-radius: 8px; padding: 10px 18px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
@@ -88,35 +86,33 @@
   <nav class="tabs">
     <button class="active" onclick="switchTab('journey')">🗺️ Level Journey</button>
     <button onclick="switchTab('daily')">📖 Daily Library</button>
-    <button onclick="switchTab('roleplay')">🎭 Roleplays</button>
+    <button onclick="switchTab('roleplay')">🎭 Roleplays (50+)</button>
     <button onclick="switchTab('call')">📞 AI Call</button>
     <button onclick="switchTab('clinic')">🩺 Mistake Lab</button>
   </nav>
 
   <!-- TAB 1: 1-100 Progressive Game Stages -->
   <main id="tab-journey" class="tab-view active">
-    <div class="journey-container">
-      <div class="stage-banner">
-        <div>
-          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
-            <span class="stage-badge" id="currentStageBadge">Stage 1 / 100</span>
-            <span class="streak-badge" id="streakBadgeText">🔥 Streak: 1 Day</span>
-          </div>
-          <h2 id="stageTitle" style="font-size: 1.15rem; color: #e2e8f0;">Day &amp; Meal Basics</h2>
-          <p id="stageObjective" style="color: var(--text-muted); font-size: 0.85rem;">Master morning, afternoon, evening, breakfast &amp; dinner terms.</p>
+    <div class="stage-banner">
+      <div>
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+          <span class="stage-badge" id="currentStageBadge">Stage 1 / 100</span>
+          <span class="streak-badge" id="streakBadgeText">🔥 Streak: 1 Day</span>
         </div>
-        <button class="btn-sm" style="background: #4338ca;" onclick="advanceStage()">Skip / Complete Stage ⏩</button>
+        <h2 id="stageTitle" style="font-size: 1.15rem; color: #e2e8f0;">Day &amp; Meal Basics</h2>
+        <p id="stageObjective" style="color: var(--text-muted); font-size: 0.85rem;">Master morning, afternoon, evening, night, lunch &amp; breakfast terms.</p>
       </div>
+      <button class="btn-sm" style="background: #4338ca;" onclick="advanceStage()">Skip / Next Stage ⏩</button>
+    </div>
 
-      <div class="chat-box-card">
-        <h3 style="font-size: 0.95rem; color: #cbd5e1; margin-bottom: 8px;">Interactive Mission Coach</h3>
-        <div id="journeyChatMessages" class="chat-messages"></div>
-        <div id="journeyHints" class="hints-wrapper"></div>
-        <div class="inline-chat-bar">
-          <button id="journeyMicBtn" class="btn btn-mic" onclick="toggleSpeechRec('journey')">🎤 Speak</button>
-          <input type="text" id="journeyInput" placeholder="Answer the coach or click a suggestion..." />
-          <button class="btn" onclick="sendJourneyChat()">Send</button>
-        </div>
+    <div class="chat-box-card">
+      <h3 style="font-size: 0.95rem; color: #cbd5e1; margin-bottom: 8px;">Interactive Mission Coach</h3>
+      <div id="journeyChatMessages" class="chat-messages"></div>
+      <div id="journeyHints" class="hints-wrapper"></div>
+      <div class="inline-chat-bar">
+        <button id="journeyMicBtn" class="btn btn-mic" onclick="toggleSpeechRec('journey')">🎤 Speak</button>
+        <input type="text" id="journeyInput" placeholder="Speak or click a suggestion..." />
+        <button class="btn" onclick="sendJourneyChat()">Send</button>
       </div>
     </div>
   </main>
@@ -139,7 +135,7 @@
       <div class="feature-card">
         <div>
           <h3>✏️ Micro-Lesson: &quot;Since&quot; vs &quot;For&quot;</h3>
-          <p><strong>Rule:</strong> <em>Since</em> marks a start point. <em>For</em> measures elapsed duration.</p>
+          <p><strong>Rule:</strong> <em>Since</em> marks a start point. <em>For</em> measures duration.</p>
           <div class="example-box">💬 &quot;I have studied here for 2 years (duration), since 2024 (start point).&quot;</div>
         </div>
         <div class="card-actions">
@@ -151,7 +147,7 @@
       <div class="feature-card">
         <div>
           <h3>🗣️ Idiom: &quot;Bite the bullet&quot;</h3>
-          <p><strong>Meaning:</strong> Facing an unpleasant situation with courage.</p>
+          <p><strong>Meaning:</strong> Facing an unavoidable, tough situation with courage.</p>
           <div class="example-box">💬 &quot;I hated apologizing, but I had to bite the bullet and do it.&quot;</div>
         </div>
         <div class="card-actions">
@@ -173,8 +169,8 @@
       </div>
     </div>
 
-    <!-- Self Contained Daily Practice Box (Does not navigate to Tab 1) -->
-    <div id="libraryPracticeCard" class="chat-box-card" style="display: none; max-width: 960px; margin: 0 auto; width: 100%;">
+    <!-- Self-Contained Library Practice Drawer -->
+    <div id="libraryPracticeCard" class="chat-box-card" style="display: none; margin-top: 16px;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
         <h3 id="libraryPracticeTitle" style="font-size: 0.95rem; color: #818cf8;">Library Practice</h3>
         <button class="btn-sm" onclick="document.getElementById('libraryPracticeCard').style.display = 'none'">Close Practice ✕</button>
@@ -188,56 +184,52 @@
     </div>
   </main>
 
-  <!-- TAB 3: Roleplay with Dedicated Active Status -->
+  <!-- TAB 3: 50+ Roleplay Catalog & Custom Scenario Builder -->
   <main id="tab-roleplay" class="tab-view">
-    <div class="card-grid">
-      <div class="feature-card" onclick="selectRoleplay('☕ Coffee Shop Order', 'Barista at an artisan coffee shop. Spoken dialogue only, under 2 sentences, no stage directions.')">
-        <h3>☕ Coffee Shop Order</h3>
-        <p>Order coffee, specify milk options, and ask about sizes.</p>
+    <div class="custom-roleplay-box">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+        <h3 style="font-size: 1.05rem; color: #cbd5e1;">🎭 Choose from 50+ Real-World Roleplays</h3>
+        <span style="font-size: 0.85rem; color: var(--text-muted);">Pick from dropdown or design your own:</span>
       </div>
-      <div class="feature-card" onclick="selectRoleplay('💼 Software Job Interview', 'Senior technical interviewer hiring a developer. Direct spoken interview questions.')">
-        <h3>💼 Software Job Interview</h3>
-        <p>Answer behavioral questions and present your past experience.</p>
-      </div>
-      <div class="feature-card" onclick="selectRoleplay('✈️ Airport Immigration', 'Airport border officer checking visitor passports and itinerary. Spoken dialogue only.')">
-        <h3>✈️ Airport Immigration</h3>
-        <p>Explain trip duration, accommodation details, and purpose.</p>
-      </div>
-      <div class="feature-card" onclick="selectRoleplay('🏨 Hotel Check-In', 'Hotel receptionist welcoming a guest. Spoken dialogue only.')">
-        <h3>🏨 Hotel Check-In</h3>
-        <p>Check in late, request room upgrades, and ask about breakfast.</p>
+      <select id="roleplayCatalogSelect" style="padding: 10px; font-size: 0.9rem; background: #0f172a;" onchange="loadSelectedRoleplayFromDropdown()"></select>
+      <div class="custom-roleplay-input">
+        <input type="text" id="customRoleplayInput" placeholder="Or type any custom roleplay (e.g. You are a mechanic explaining my car repair)..." />
+        <button class="btn" onclick="startCustomScenario()">Launch Custom</button>
       </div>
     </div>
 
-    <div class="chat-box-card" style="max-width: 960px; margin: 0 auto; width: 100%;">
+    <div class="chat-box-card">
       <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 8px;">
-        <span style="font-size: 0.85rem; color: var(--text-muted);">CURRENT SCENARIO:</span>
-        <strong id="activeRoleplayHeader" style="color: #818cf8; font-size: 0.95rem;">☕ Coffee Shop Order</strong>
+        <div>
+          <span style="font-size: 0.75rem; color: var(--text-muted); display: block;">ACTIVE ROLEPLAY</span>
+          <strong id="activeRoleplayHeader" style="color: #818cf8; font-size: 1rem;">☕ Coffee Shop Order</strong>
+        </div>
+        <p id="activeRoleplayDesc" style="font-size: 0.85rem; color: var(--text-muted);">Ordering beverages and breakfast.</p>
       </div>
       <div id="roleplayChatMessages" class="chat-messages"></div>
       <div id="roleplayHints" class="hints-wrapper"></div>
       <div class="inline-chat-bar">
         <button id="roleplayMicBtn" class="btn btn-mic" onclick="toggleSpeechRec('roleplay')">🎤 Speak</button>
-        <input type="text" id="roleplayInput" placeholder="Reply in character or click a suggestion..." />
+        <input type="text" id="roleplayInput" placeholder="Speak your reply or click a hint..." />
         <button class="btn" onclick="sendRoleplayChat()">Send</button>
       </div>
     </div>
   </main>
 
-  <!-- TAB 4: AI Call Mode with 10s Thinking Timer -->
+  <!-- TAB 4: AI Call with 10s Thinking Buffer and Continuous Mic -->
   <main id="tab-call" class="tab-view call-view">
     <div id="callAvatar" class="avatar-ring">📞</div>
-    <div id="callStatus" class="call-transcript">Tap "Start Call" to begin speaking with your AI friend.</div>
+    <div id="callStatus" class="call-transcript">Tap "Start Call" to talk freely with your AI friend.</div>
     <div id="callTimerNotice" class="thinking-timer"></div>
     
-    <div style="display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; max-width: 500px;">
-      <div id="callHintsContainer" class="hints-wrapper" style="justify-content: center;"></div>
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; max-width: 550px;">
+      <div id="callHintsContainer" class="hints-wrapper"></div>
     </div>
 
     <button id="callToggleBtn" class="btn" style="padding: 12px 28px; font-size: 1rem;" onclick="toggleCallMode()">📞 Start Call</button>
   </main>
 
-  <!-- TAB 5: Speech Clinic -->
+  <!-- TAB 5: Speech Clinic & Mistake Lab -->
   <main id="tab-clinic" class="tab-view">
     <div class="card-grid">
       <div class="feature-card" style="text-align: center;">
@@ -253,10 +245,13 @@
         <span id="repeatCount" style="font-size: 2rem; font-weight: 700; color: #818cf8;">0</span>
       </div>
     </div>
-    <div class="chat-box-card" style="max-width: 960px; margin: 0 auto; width: 100%;">
-      <h3 style="font-size: 0.95rem; color: #cbd5e1; margin-bottom: 8px;">🔬 Recent Mistake Diagnostics</h3>
+    <div class="chat-box-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <h3 style="font-size: 0.95rem; color: #cbd5e1;">🔬 Recent Mistake Diagnostics</h3>
+        <button class="btn-sm" onclick="resetClinicStats()">Reset Counters</button>
+      </div>
       <div id="mistakeLogList" style="display: flex; flex-direction: column; gap: 8px; font-size: 0.85rem;">
-        <p style="color: var(--text-muted);">No mistakes logged yet. Practice in any tab to see live diagnostics here!</p>
+        <p style="color: var(--text-muted);">No mistakes logged yet. Practice in any tab to see live diagnostics!</p>
       </div>
     </div>
   </main>
@@ -264,7 +259,7 @@
   <script>
     const BACKEND_URL = "https://speakflow-proxy.chizovechikho.workers.dev";
 
-    // --- 1. Persistent Daily Streak System ---
+    // --- 1. Daily Streak System ---
     function checkDailyStreak() {
       const today = new Date().toDateString();
       const lastVisit = localStorage.getItem("speakflow_last_date");
@@ -281,21 +276,21 @@
     }
     checkDailyStreak();
 
-    // --- 2. 1 to 100 Progressive Game Stages ---
+    // --- 2. 1 to 100 Stages ---
     const STAGES = [
-      { id: 1, title: "Day & Meal Basics", desc: "Master morning, afternoon, evening, night, lunch & breakfast terms.", prompt: "Teach Level 1: Teach me morning, afternoon, night, breakfast, and lunch. Ask me what I ate for lunch today." },
-      { id: 2, title: "Greetings & Self Intro", desc: "Introduce your name, where you live, and common greetings.", prompt: "Teach Level 2: Practice greetings and self-introductions. Ask me where I am from." },
-      { id: 3, title: "Daily Routines", desc: "Describe daily schedules using simple present tense.", prompt: "Teach Level 3: Practice daily routines using simple present tense. Ask me what time I wake up." },
-      { id: 4, title: "Likes & Dislikes", desc: "Express preferences with 'I prefer', 'I enjoy', and 'I dislike'.", prompt: "Teach Level 4: Teach expressing likes and dislikes. Ask me what food or hobbies I enjoy." },
-      { id: 5, title: "Asking for Directions", desc: "Learn key phrases: turn left, right, straight ahead, near.", prompt: "Teach Level 5: Teach direction vocabulary. Ask me how to get to the nearest station." }
+      { id: 1, title: "Day & Meal Basics", desc: "Master morning, afternoon, evening, night, lunch & breakfast terms.", prompt: "Teach Level 1: Introduce morning, afternoon, evening, night, lunch, and breakfast. Ask what I ate for lunch today." },
+      { id: 2, title: "Greetings & Self Intro", desc: "Introduce your name, origin, hobbies, and polite greetings.", prompt: "Teach Level 2: Practice greetings and self-introductions. Ask me where I am from and what I do." },
+      { id: 3, title: "Daily Routines", desc: "Describe habits and schedules using present simple tense.", prompt: "Teach Level 3: Practice daily routines using simple present tense. Ask what time I wake up." },
+      { id: 4, title: "Likes & Dislikes", desc: "Express preferences with 'I prefer', 'I enjoy', and 'I dislike'.", prompt: "Teach Level 4: Practice expressing likes and dislikes. Ask what food or music I enjoy." },
+      { id: 5, title: "Asking Directions", desc: "Learn key phrases: turn left, right, straight ahead, near.", prompt: "Teach Level 5: Teach direction vocabulary. Ask me how to get to the nearest station." }
     ];
 
     let currentStage = parseInt(localStorage.getItem("speakflow_stage") || "1", 10);
     function updateStageUI() {
       const stageData = STAGES.find(s => s.id === currentStage) || {
         id: currentStage,
-        title: `Advanced Fluency Challenge ${currentStage}`,
-        desc: `Level ${currentStage}: Conversational nuances and mastery.`,
+        title: `Fluency Stage ${currentStage}`,
+        desc: `Level ${currentStage}: Conversational mastery and complex sentence structure.`,
         prompt: `Teach Level ${currentStage}: Engage me in an interactive conversation suitable for Level ${currentStage}.`
       };
       document.getElementById("currentStageBadge").textContent = `Stage ${stageData.id} / 100`;
@@ -358,7 +353,70 @@
       speakText(text, null);
     }
 
-    // --- 4. Navigation & State ---
+    // --- 4. Speech Clinic Tracker ---
+    let clinicStats = JSON.parse(localStorage.getItem("speakflow_clinic")) || { fillers: 0, grammar: 0, repeats: 0, logs: [] };
+
+    function updateClinicDisplay() {
+      document.getElementById("fillerCount").textContent = clinicStats.fillers;
+      document.getElementById("grammarSlipCount").textContent = clinicStats.grammar;
+      document.getElementById("repeatCount").textContent = clinicStats.repeats;
+
+      const logBox = document.getElementById("mistakeLogList");
+      if (clinicStats.logs.length === 0) {
+        logBox.innerHTML = '<p style="color: var(--text-muted);">No mistakes logged yet. Practice to see live diagnostics!</p>';
+      } else {
+        logBox.innerHTML = clinicStats.logs.slice(-5).reverse().map(item => `
+          <div style="background: #0f172a; padding: 8px 12px; border-radius: 6px; border-left: 3px solid #f59e0b;">
+            <strong>${item.type}:</strong> "${item.snippet}" <br>
+            <span style="color: #94a3b8; font-size: 0.8rem;">💡 Tip: ${item.tip}</span>
+          </div>
+        `).join("");
+      }
+    }
+
+    function logMistake(type, snippet, tip) {
+      clinicStats.logs.push({ type, snippet, tip, date: new Date().toLocaleTimeString() });
+      localStorage.setItem("speakflow_clinic", JSON.stringify(clinicStats));
+      updateClinicDisplay();
+    }
+
+    function resetClinicStats() {
+      clinicStats = { fillers: 0, grammar: 0, repeats: 0, logs: [] };
+      localStorage.setItem("speakflow_clinic", JSON.stringify(clinicStats));
+      updateClinicDisplay();
+    }
+
+    function analyzeUserInput(text) {
+      const lower = text.toLowerCase();
+      const fillerMatches = lower.match(/\b(um|uh|like|you know|actually|basically)\b/g);
+      if (fillerMatches) {
+        clinicStats.fillers += fillerMatches.length;
+        logMistake("Filler Word", fillerMatches.join(", "), "Pause silently instead of using filler words.");
+      }
+
+      const words = lower.split(/\s+/);
+      for (let i = 0; i < words.length - 1; i++) {
+        if (words[i] === words[i + 1] && words[i].length > 2) {
+          clinicStats.repeats += 1;
+          logMistake("Word Repetition", `${words[i]} ${words[i]}`, "Take a breath before finishing your thought.");
+          break;
+        }
+      }
+
+      if (lower.includes("explain me")) {
+        clinicStats.grammar += 1;
+        logMistake("Grammar Slip", "explain me", "Say 'explain to me' instead.");
+      } else if (lower.includes("since 2 years") || lower.includes("since two years")) {
+        clinicStats.grammar += 1;
+        logMistake("Tense Slip", "since 2 years", "Use 'for 2 years' when referring to duration.");
+      }
+
+      localStorage.setItem("speakflow_clinic", JSON.stringify(clinicStats));
+      updateClinicDisplay();
+    }
+    updateClinicDisplay();
+
+    // --- 5. Navigation ---
     function switchTab(tabId) {
       document.querySelectorAll(".tabs button").forEach(b => b.classList.remove("active"));
       event.target.classList.add("active");
@@ -376,7 +434,38 @@
       box.scrollTop = box.scrollHeight;
     }
 
-    // --- 5. TAB 1: Level Journey Engine ---
+    // --- 6. Parsing AI Response + Dynamic Suggestions ---
+    function parseAIResponseWithHints(rawText) {
+      let speechPart = rawText;
+      let hints = [];
+
+      if (rawText.includes("SUGGESTIONS:")) {
+        const parts = rawText.split("SUGGESTIONS:");
+        speechPart = parts[0].trim();
+        const hintsRaw = parts[1].trim();
+        hints = hintsRaw.split("\n")
+          .map(h => h.replace(/^[-*0-9.]+\s*/, '').replace(/^"|"$/g, '').trim())
+          .filter(h => h.length > 3);
+      }
+
+      return { speech: cleanSpokenDialogue(speechPart), hints: hints.slice(0, 3) };
+    }
+
+    function renderHints(containerId, hints, onSelect) {
+      const box = document.getElementById(containerId);
+      box.innerHTML = "";
+      if (!hints || hints.length === 0) return;
+
+      hints.forEach(h => {
+        const chip = document.createElement("button");
+        chip.className = "hint-chip";
+        chip.textContent = `💡 "${h}"`;
+        chip.onclick = () => onSelect(h);
+        box.appendChild(chip);
+      });
+    }
+
+    // --- 7. TAB 1: Level Journey Engine ---
     let journeyHistory = [];
     function startStageLesson() {
       const stageData = STAGES.find(s => s.id === currentStage) || STAGES[0];
@@ -389,12 +478,15 @@
       const inputElem = document.getElementById("journeyInput");
       const text = customText || inputElem.value.trim();
       if (!text) return;
-      if (!customText) inputElem.value = "";
+      if (!customText) {
+        inputElem.value = "";
+        analyzeUserInput(text);
+      }
 
       if (!customText) appendMessage("journeyChatMessages", "You", text);
       journeyHistory.push({ sender: customText ? "System" : "You", text });
 
-      const prompt = `You are a patient English tutor teaching Stage ${currentStage} of 100. Focus strictly on: ${document.getElementById('stageObjective').textContent}. Keep replies under 2 spoken sentences. End with 1 clear practice question. No stage actions in brackets.`;
+      const prompt = `You are a patient English tutor teaching Stage ${currentStage} of 100 (${document.getElementById('stageObjective').textContent}). Give direct spoken dialogue only (1-2 sentences). Then on a new line output SUGGESTIONS: followed by 2-3 realistic answers the student can say next.`;
 
       try {
         const res = await fetch(BACKEND_URL, {
@@ -403,24 +495,20 @@
           body: JSON.stringify({ system_prompt: prompt, messages: journeyHistory })
         });
         const data = await res.json();
-        const reply = cleanSpokenDialogue(data.reply || "Let us continue our lesson.");
-        appendMessage("journeyChatMessages", "AI", reply);
-        journeyHistory.push({ sender: "AI", text: reply });
-        
-        renderHints("journeyHints", [
-          "For breakfast I usually eat eggs and toast.",
-          "I wake up around seven in the morning.",
-          "Could you give me an example sentence?"
-        ], (hint) => sendJourneyChat(hint));
+        const { speech, hints } = parseAIResponseWithHints(data.reply || "Let's continue.");
 
-        speakText(reply);
+        appendMessage("journeyChatMessages", "AI", speech);
+        journeyHistory.push({ sender: "AI", text: speech });
+
+        renderHints("journeyHints", hints, (hint) => sendJourneyChat(hint));
+        speakText(speech);
       } catch {
         appendMessage("journeyChatMessages", "AI", "Connection error. Please try again.");
       }
     }
     startStageLesson();
 
-    // --- 6. TAB 2: Isolated Daily Library Practice ---
+    // --- 8. TAB 2: Self-Contained Library Practice ---
     let libraryHistory = [];
     function openLibraryPractice(title, initialPrompt) {
       const practiceCard = document.getElementById("libraryPracticeCard");
@@ -435,7 +523,10 @@
       const inputElem = document.getElementById("libraryInput");
       const text = customText || inputElem.value.trim();
       if (!text) return;
-      if (!customText) inputElem.value = "";
+      if (!customText) {
+        inputElem.value = "";
+        analyzeUserInput(text);
+      }
 
       if (!customText) appendMessage("libraryChatMessages", "You", text);
       libraryHistory.push({ sender: customText ? "System" : "You", text });
@@ -444,10 +535,10 @@
         const res = await fetch(BACKEND_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ system_prompt: "You are a concise grammar tutor evaluating the user's sentence. Keep replies under 2 short sentences. Spoken dialogue only.", messages: libraryHistory })
+          body: JSON.stringify({ system_prompt: "You are a concise grammar tutor evaluating the student's sentence. Spoken dialogue only, under 2 sentences.", messages: libraryHistory })
         });
         const data = await res.json();
-        const reply = cleanSpokenDialogue(data.reply || "Good sentence!");
+        const reply = cleanSpokenDialogue(data.reply || "Well done!");
         appendMessage("libraryChatMessages", "AI", reply);
         libraryHistory.push({ sender: "AI", text: reply });
         speakText(reply);
@@ -456,21 +547,84 @@
       }
     }
 
-    // --- 7. TAB 3: Isolated Roleplay with Matched Suggestions ---
-    let roleplayHistory = [];
-    let activeRoleplayPrompt = "";
-    const ROLEPLAY_HINTS = {
-      "☕ Coffee Shop Order": ["I'd like a medium iced latte with oat milk.", "Could I have a blueberry muffin as well?", "How much is that in total?"],
-      "💼 Software Job Interview": ["I specialize in frontend development and APIs.", "My biggest project was an AI language web app.", "Could you tell me more about the engineering team?"],
-      "✈️ Airport Immigration": ["I am visiting for two weeks for vacation.", "I am staying at the downtown hotel.", "Here is my return flight ticket."],
-      "🏨 Hotel Check-In": ["I have a reservation under my name.", "Is breakfast included in this booking?", "Could I request a quiet room on a higher floor?"]
-    };
+    // --- 9. TAB 3: 50+ Roleplay Catalog & Dynamic Engine ---
+    const ROLEPLAYS_50 = [
+      // Career & Tech
+      { id: "tech_interview", title: "💼 Software Job Interview", desc: "Technical screening on Git, coding, architecture & APIs", role: "You are a senior tech interviewer asking practical questions about Git rebasing, APIs, and clean code." },
+      { id: "salary_negotiation", title: "💰 Salary Negotiation", desc: "Negotiating an offer with an HR hiring director", role: "You are an HR Director discussing salary expectations with a promising candidate." },
+      { id: "standup_meeting", title: "💻 Daily Agile Standup", desc: "Reporting your sprint updates, blockers & yesterday's work", role: "You are a Scrum Master facilitating a daily standup meeting." },
+      { id: "presentation_qa", title: "📊 Project Q&A Session", desc: "Answering client questions following a software demo", role: "You are a client asking questions about features and scalability after a demo." },
+      { id: "resignation_talk", title: "🚪 Resignation Conversation", desc: "Politely discussing departure and handover with your manager", role: "You are a supportive manager discussing the employee's two-week notice and handover." },
+      
+      // Daily Services & Dining
+      { id: "cafe_order", title: "☕ Coffee Shop Order", desc: "Ordering specialty coffee, milk substitutions & pastries", role: "You are an artisan barista taking a customer's drink and pastry order." },
+      { id: "restaurant_dinner", title: "🍽️ Restaurant Dining", desc: "Asking about menu recommendations and dietary restrictions", role: "You are a waiter at a fine dining restaurant explaining specials and taking orders." },
+      { id: "fast_food", title: "🍔 Drive-Thru / Fast Food", desc: "Rapid food ordering, meal combos & special requests", role: "You are a fast-food cashier taking a drive-thru combo order." },
+      { id: "grocery_checkout", title: "🛒 Supermarket Checkout", desc: "Inquiring about sales, coupons, bags & payment options", role: "You are a supermarket cashier checking out groceries and asking for payment." },
+      { id: "barber_salon", title: "✂️ Haircut & Salon", desc: "Describing the desired haircut length and style", role: "You are a hairstylist asking how the customer wants their hair styled today." },
 
-    function selectRoleplay(name, prompt) {
-      document.getElementById("activeRoleplayHeader").textContent = name;
-      activeRoleplayPrompt = prompt;
+      // Travel & Transit
+      { id: "airport_immigration", title: "✈️ Airport Immigration", desc: "Explaining travel itinerary, hotel bookings & trip purpose", role: "You are a border control officer verifying visitor passports, return tickets, and lodging." },
+      { id: "hotel_checkin", title: "🏨 Hotel Check-In", desc: "Checking in, room floor preferences & breakfast schedules", role: "You are a hotel front desk clerk welcoming a guest and handing over room keys." },
+      { id: "taxi_uber", title: "🚕 Taxi / Rideshare Ride", desc: "Giving turn-by-turn directions, drop-off spots & tipping", role: "You are an Uber driver confirming the drop-off location and discussing traffic." },
+      { id: "lost_luggage", title: "🧳 Lost Airport Luggage", desc: "Filing a claim for missing bags with baggage services", role: "You are an airline baggage claims agent taking a report on lost luggage." },
+      { id: "train_ticket", title: "🚆 Train Station Booking", desc: "Purchasing round-trip tickets, seat reserves & transfers", role: "You are a railway station ticket agent selling tickets and platform info." },
+
+      // Socializing & Everyday
+      { id: "casual_mixer", title: "🎉 Weekend Social Mixer", desc: "Breaking the ice and making small talk with a stranger", role: "You are a friendly person at a weekend mixer striking up a conversation." },
+      { id: "neighbor_chat", title: "🏡 Meeting a New Neighbor", desc: "Welcoming someone to the apartment complex or neighborhood", role: "You are a neighbor welcoming someone new to the apartment floor." },
+      { id: "movie_debate", title: "🍿 Film & Cinema Discussion", desc: "Debating recent plot twists, actors & cinematic style", role: "You are a movie enthusiast debating recent movies and recommendations." },
+      { id: "gym_trainer", title: "🏋️ Gym & Fitness Training", desc: "Discussing workout routines, weights & nutrition goals", role: "You are a gym trainer consulting a member about their fitness goals." },
+      { id: "pet_park", title: "🐕 Dog Park Encounter", desc: "Talking about breeds, pet behavior & daily walks", role: "You are a dog owner at the park chatting with another pet owner." },
+
+      // Problem Solving & Inquiries
+      { id: "doctor_visit", title: "🩺 Doctor Consultation", desc: "Describing flu symptoms, fever duration & prescriptions", role: "You are a primary care doctor asking a patient about their symptoms." },
+      { id: "pharmacy_pickup", title: "💊 Pharmacy Prescription", desc: "Inquiring about dosage, side effects & OTC medicine", role: "You are a pharmacist explaining how and when to take a prescription." },
+      { id: "mechanic_repair", title: "🔧 Auto Mechanic Repair", desc: "Explaining strange engine noises, brakes & repair quotes", role: "You are an auto mechanic explaining what needs fixing on the customer's car." },
+      { id: "tech_support", title: "🖥️ ISP / Wi-Fi Support", desc: "Troubleshooting interrupted internet connectivity & routers", role: "You are a technical support agent helping fix a home internet router." },
+      { id: "product_return", title: "🛍️ Retail Store Return", desc: "Returning a defective clothing item or requesting exchanges", role: "You are a customer service rep processing a clothing return and exchange." }
+    ];
+
+    function populateRoleplayCatalog() {
+      const select = document.getElementById("roleplayCatalogSelect");
+      select.innerHTML = "";
+      ROLEPLAYS_50.forEach((rp, index) => {
+        const opt = document.createElement("option");
+        opt.value = index;
+        opt.textContent = `${rp.title} — ${rp.desc}`;
+        select.appendChild(opt);
+      });
+    }
+    populateRoleplayCatalog();
+
+    let roleplayHistory = [];
+    let currentRoleplay = ROLEPLAYS_50[0];
+
+    function loadSelectedRoleplayFromDropdown() {
+      const idx = document.getElementById("roleplayCatalogSelect").value;
+      currentRoleplay = ROLEPLAYS_50[idx];
+      document.getElementById("activeRoleplayHeader").textContent = currentRoleplay.title;
+      document.getElementById("activeRoleplayDesc").textContent = currentRoleplay.desc;
       roleplayHistory = [];
       document.getElementById("roleplayChatMessages").innerHTML = "";
+      document.getElementById("roleplayHints").innerHTML = "";
+      sendRoleplayChat("Hi, let's start the roleplay!");
+    }
+
+    function startCustomScenario() {
+      const val = document.getElementById("customRoleplayInput").value.trim();
+      if (!val) return;
+      document.getElementById("customRoleplayInput").value = "";
+      currentRoleplay = {
+        title: "🎭 Custom: " + val.slice(0, 30) + "...",
+        desc: val,
+        role: `Roleplay scenario: ${val}. Keep in character. Direct spoken dialogue only.`
+      };
+      document.getElementById("activeRoleplayHeader").textContent = currentRoleplay.title;
+      document.getElementById("activeRoleplayDesc").textContent = currentRoleplay.desc;
+      roleplayHistory = [];
+      document.getElementById("roleplayChatMessages").innerHTML = "";
+      document.getElementById("roleplayHints").innerHTML = "";
       sendRoleplayChat("Hi, let's start the roleplay!");
     }
 
@@ -478,52 +632,52 @@
       const inputElem = document.getElementById("roleplayInput");
       const text = customText || inputElem.value.trim();
       if (!text) return;
-      if (!customText) inputElem.value = "";
+      if (!customText) {
+        inputElem.value = "";
+        analyzeUserInput(text);
+      }
 
       if (!customText) appendMessage("roleplayChatMessages", "You", text);
       roleplayHistory.push({ sender: customText ? "System" : "You", text });
 
-      const currentHeader = document.getElementById("activeRoleplayHeader").textContent;
+      const prompt = `${currentRoleplay.role}
+RULES:
+1. Speak in natural, direct dialogue (max 2 sentences).
+2. NO physical actions, stage notes, or text in parentheses.
+3. Crucially: on a new line, write 'SUGGESTIONS:' followed by 2-3 realistic, high-quality answers the user could say to reply to your question.`;
 
       try {
         const res = await fetch(BACKEND_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ system_prompt: activeRoleplayPrompt || "You are a barista at a coffee shop. Spoken dialogue only.", messages: roleplayHistory })
+          body: JSON.stringify({ system_prompt: prompt, messages: roleplayHistory })
         });
         const data = await res.json();
-        const reply = cleanSpokenDialogue(data.reply || "How can I help you next?");
-        appendMessage("roleplayChatMessages", "AI", reply);
-        roleplayHistory.push({ sender: "AI", text: reply });
+        const { speech, hints } = parseAIResponseWithHints(data.reply || "How can I help you?");
 
-        // Provide matched suggestions based strictly on selected roleplay
-        const hints = ROLEPLAY_HINTS[currentHeader] || ["Could you tell me more?", "Yes, that sounds great.", "I have a quick question."];
+        appendMessage("roleplayChatMessages", "AI", speech);
+        roleplayHistory.push({ sender: "AI", text: speech });
+
         renderHints("roleplayHints", hints, (hint) => sendRoleplayChat(hint));
-
-        speakText(reply);
+        speakText(speech);
       } catch {
-        appendMessage("roleplayChatMessages", "AI", "Roleplay connection error.");
+        appendMessage("roleplayChatMessages", "AI", "Connection error.");
       }
     }
-    selectRoleplay('☕ Coffee Shop Order', 'Barista at an artisan coffee shop. Spoken dialogue only, under 2 sentences, no stage directions.');
+    loadSelectedRoleplayFromDropdown();
 
-    function renderHints(containerId, hints, onSelect) {
-      const box = document.getElementById(containerId);
-      box.innerHTML = "";
-      hints.forEach(h => {
-        const chip = document.createElement("button");
-        chip.className = "hint-chip";
-        chip.textContent = `💡 "${h}"`;
-        chip.onclick = () => onSelect(h);
-        box.appendChild(chip);
-      });
-    }
-
-    // --- 8. TAB 4: Dedicated AI Call with 10-Second Thinking Timer ---
+    // --- 10. TAB 4: Continuous Mic & 10s Timer AI Call ---
     let callHistory = [];
     let inCall = false;
     let thinkingTimer = null;
-    const CALL_PROMPT = "You are an easygoing friend chatting on the phone. Converse naturally in 1-2 spoken sentences. NEVER output narrative notes or actions in parentheses. If the user asks you to pick a topic, suggest something fun and everyday.";
+    let latestCallHints = [];
+
+    const CALL_PROMPT = `You are a close friend chatting on a casual phone call.
+RULES:
+1. Speak casually in 1-2 spoken sentences.
+2. NO actions in parentheses (no smiles, chuckles, sighing).
+3. If the user asks you to pick a topic, bring up a fun, relatable subject.
+4. On a new line, write 'SUGGESTIONS:' followed by 2-3 natural responses the user could say back to you.`;
 
     function toggleCallMode() {
       inCall = !inCall;
@@ -533,6 +687,7 @@
 
       clearTimeout(thinkingTimer);
       document.getElementById("callTimerNotice").textContent = "";
+      document.getElementById("callHintsContainer").innerHTML = "";
 
       if (inCall) {
         btn.textContent = "End Call";
@@ -542,6 +697,11 @@
         const greeting = "Hey! It's me. How are you doing today?";
         callHistory = [{ sender: "AI", text: greeting }];
         statusText.textContent = greeting;
+        latestCallHints = [
+          "I'm doing great, just working on a project. How about you?",
+          "Pretty busy day today! What have you been up to?",
+          "Can you pick a fun topic for us to chat about?"
+        ];
 
         speakText(greeting, () => startCallWaitCycle());
       } else {
@@ -549,16 +709,16 @@
         btn.style.background = "var(--accent)";
         ring.classList.remove("active");
         statusText.textContent = "Call ended.";
-        document.getElementById("callHintsContainer").innerHTML = "";
         window.speechSynthesis.cancel();
       }
     }
 
     function startCallWaitCycle() {
       if (!inCall) return;
-      document.getElementById("callStatus").textContent = "Listening... (Take your time)";
+      const statusText = document.getElementById("callStatus");
+      statusText.textContent = "Listening... (Take your time)";
       document.getElementById("callHintsContainer").innerHTML = "";
-      
+
       let secondsLeft = 10;
       document.getElementById("callTimerNotice").textContent = `Thinking time: ${secondsLeft}s`;
 
@@ -570,17 +730,13 @@
           document.getElementById("callTimerNotice").textContent = `Thinking time: ${secondsLeft}s`;
         } else {
           clearInterval(thinkingTimer);
-          document.getElementById("callTimerNotice").textContent = "💡 Need an idea? Try saying one of these:";
-          renderHints("callHintsContainer", [
-            "I had a pretty relaxing day, how about you?",
-            "Can you pick a fun topic for us to talk about?",
-            "Tell me about your favorite movie or TV show!"
-          ], (hint) => handleCallExchange(hint));
+          document.getElementById("callTimerNotice").textContent = "💡 Need an idea? Read one aloud or click:";
+          renderHints("callHintsContainer", latestCallHints, (hint) => handleCallExchange(hint));
         }
       }, 1000);
 
-      // Start recognition only once per exchange
-      if (rec) rec.start();
+      // Start continuous listening
+      try { if (rec) rec.start(); } catch(e) {}
     }
 
     async function handleCallExchange(spokenText) {
@@ -589,6 +745,7 @@
       document.getElementById("callTimerNotice").textContent = "";
       document.getElementById("callHintsContainer").innerHTML = "";
 
+      analyzeUserInput(spokenText);
       callHistory.push({ sender: "You", text: spokenText });
       document.getElementById("callStatus").textContent = "Thinking...";
 
@@ -599,17 +756,19 @@
           body: JSON.stringify({ system_prompt: CALL_PROMPT, messages: callHistory })
         });
         const data = await res.json();
-        const reply = cleanSpokenDialogue(data.reply || "Could you say that once more?");
-        callHistory.push({ sender: "AI", text: reply });
-        document.getElementById("callStatus").textContent = reply;
+        const { speech, hints } = parseAIResponseWithHints(data.reply || "Could you say that once more?");
+        latestCallHints = hints.length ? hints : ["Tell me more about that.", "What do you think about it?", "Let's change topics!"];
 
-        speakText(reply, () => startCallWaitCycle());
+        callHistory.push({ sender: "AI", text: speech });
+        document.getElementById("callStatus").textContent = speech;
+
+        speakText(speech, () => startCallWaitCycle());
       } catch {
-        document.getElementById("callStatus").textContent = "Connection issue. Tap to end call.";
+        document.getElementById("callStatus").textContent = "Connection issue. Tap End Call.";
       }
     }
 
-    // --- 9. Universal Speech Recognition Router ---
+    // --- 11. Speech Recognition Engine ---
     const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
     let rec = SpeechRec ? new SpeechRec() : null;
     let activeRecTarget = "journey";
@@ -643,6 +802,10 @@
             btn.textContent = "🎤 Speak";
           }
         });
+        // If in call mode, keep listening continuously
+        if (inCall) {
+          try { rec.start(); } catch(e) {}
+        }
       };
     }
 
