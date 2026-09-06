@@ -514,42 +514,129 @@
       box.scrollTop = box.scrollHeight;
     }
 
-    // --- 6. Reliable Suggestions: always return 2-3 contextual replies ---
-    function makeContextualSuggestions(speechPart, mode="conversation") {
-      const q=speechPart.toLowerCase();
-      if(/what(?:'s| is) your name|your name/.test(q)) return ["My name is Alex.","I’m Alex. Nice to meet you.","You can call me Alex."];
-      if(/how are you|how's it going/.test(q)) return ["I’m doing well, thank you.","I’m good today. How about you?","I’m fine and feeling great."];
-      if(/where (?:are you|do you) (?:from|live)/.test(q)||/where.*from|where.*live/.test(q)) return ["I’m from India.","I live in the city center.","I’m from a small town, but I live here now."];
-      if(/what.*(eat|food|lunch|breakfast|dinner)/.test(q)) return ["I had rice and vegetables for lunch.","I usually eat something light.","I had a quick meal and some tea."];
-      if(/what.*(do|work)|job|study/.test(q)) return ["I work in technology.","I’m a student right now.","I work and study in my free time."];
-      if(/when|what time/.test(q)) return ["I usually do it in the morning.","Around seven o’clock works for me.","I normally do it after work."];
-      if(/why/.test(q)) return ["Because I really enjoy it.","I chose it because it is useful for me.","There are a few reasons, but that is the main one."];
-      if(/would you|do you|did you|can you|could you|have you/.test(q)) return ["Yes, I’d be happy to.","Sure, I can do that.","Yes. Let me explain."];
-      if(mode==="roleplay") return ["Sure, I’d like to go ahead with that.","Could you tell me a little more about the options?","Yes, that sounds good to me."];
-      return ["Yes, that sounds good to me.","I’d be happy to tell you more.","Could you explain that a little more?"];
+    // --- 6. Reliable, context-aware suggestions ---
+    // Suggestions are regenerated for EVERY AI turn. We never trust old suggestions
+    // or generic replies when the latest AI message has changed.
+    function normalizeHints(list){
+      return [...new Set((list||[])
+        .map(h=>String(h)
+          .replace(/^[-*•\d.)]+\s*/,"")
+          .replace(/^['\"]|['\"]$/g,"")
+          .trim())
+        .filter(h=>h.length>2 && !/^suggestions?:?$/i.test(h))
+      )].slice(0,3);
     }
 
-    function parseAIResponseWithHints(rawText, mode="conversation") {
-      const raw=String(rawText||"").replace(/\r/g,"");
-      const markerMatch=raw.match(/\n?\s*SUGGESTIONS\s*:/i);
-      let speechPart=markerMatch ? raw.slice(0,markerMatch.index).trim() : raw.trim();
-      let hints=[];
-      if(markerMatch){
-        const tail=raw.slice(markerMatch.index+markerMatch[0].length);
-        hints=tail.split(/\n|(?=\d+[.)]\s+)/)
-          .map(h=>h.replace(/^[-*•\d.)]+\s*/,"").replace(/^['"]|['"]$/g,"").trim())
-          .filter(h=>h.length>2 && !/^suggestions:?$/i.test(h));
+    function extractHints(rawText){
+      const raw=String(rawText||"").replace(/\r/g,"").trim();
+      const marker=raw.match(/(?:\n|^)\s*(?:SUGGESTIONS?|SUGGESTED\s+REPLIES|POSSIBLE\s+REPLIES)\s*:/i);
+      if(!marker) return {speech:raw,hints:[]};
+      const speech=raw.slice(0,marker.index).trim();
+      const tail=raw.slice(marker.index+marker[0].length);
+      return {speech,hints:normalizeHints(tail.split(/\n+/))};
+    }
+
+    // These are ONLY emergency fallbacks if the suggestion-generation request fails.
+    // They are based on the exact latest AI question, not on the previous turn.
+    function makeScenarioFallbackSuggestions(speechPart,mode="conversation"){
+      const q=String(speechPart||"").toLowerCase();
+      if(/purpose of (?:your )?visit|reason for (?:your )?visit|why are you (?:here|visiting)|purpose.*trip/.test(q))
+        return ["I'm here for tourism and sightseeing.","I'm visiting for a short holiday.","I'm here on vacation and will return home next week."];
+      if(/where (?:are you|will you be) staying|accommodation|hotel/.test(q))
+        return ["I'm staying at a hotel in the city center.","I have a hotel reservation for five nights.","I'll be staying with a friend during my visit."];
+      if(/return (?:ticket|flight)|when.*return|how long.*stay|how long.*staying/.test(q))
+        return ["I have a return ticket for next week.","I'll be staying for five days and then flying back.","My return flight is already booked."];
+      if(/passport|travel document/.test(q))
+        return ["Certainly, here is my passport.","Yes, of course. Here you are.","Here is my passport and supporting documents."];
+      if(/what(?:'s| is) your name|your name/.test(q))
+        return ["My name is Alex.","I'm Alex. Nice to meet you.","You can call me Alex."];
+      if(/how are you|how's it going/.test(q))
+        return ["I'm doing well, thank you.","I'm good today. How about you?","I'm fine and feeling great."];
+      if(/where (?:are you|do you) (?:from|live)/.test(q)||/where.*from|where.*live/.test(q))
+        return ["I'm from India.","I live in the city center.","I'm from a small town, but I live here now."];
+      if(/what.*(eat|food|lunch|breakfast|dinner)/.test(q))
+        return ["I had rice and vegetables for lunch.","I usually eat something light.","I had a quick meal and some tea."];
+      if(/what.*(do|work)|what do you do|job|study/.test(q))
+        return ["I work in technology.","I'm a student right now.","I work and study in my free time."];
+      if(/when|what time/.test(q))
+        return ["I usually do it in the morning.","Around seven o'clock works for me.","I normally do it after work."];
+      if(/why/.test(q))
+        return ["Because I really enjoy it.","I chose it because it is useful for me.","There are a few reasons, but that is the main one."];
+      if(/would you|do you|did you|can you|could you|have you|are you|is it|will you/.test(q))
+        return ["Yes, I'd be happy to.","Sure, I can do that.","Yes. Let me explain."];
+      if(mode==="roleplay")
+        return ["Yes, that's right.","Sure, I can tell you more about that.","I'd like to continue with that."];
+      return ["Yes, I'd be happy to tell you more.","Sure, let me explain.","Could you tell me a little more about that?"];
+    }
+
+    async function generateContextualSuggestions({speech,history,mode,scenario}){
+      // IMPORTANT: this is a NEW request after every AI turn. The exact latest
+      // AI message is placed first so the model cannot accidentally answer an old turn.
+      const recent=(history||[]).slice(-8);
+      const contextText=recent.map(m=>`${m.sender}: ${m.text}`).join("\n");
+      const prompt=`You are the reply-suggestion engine inside an English speaking practice app.
+
+SCENARIO:
+${scenario||"General conversation"}
+
+LATEST AI MESSAGE — THIS IS THE MESSAGE THE LEARNER MUST ANSWER:
+"${speech}"
+
+RECENT CONVERSATION FOR CONTEXT ONLY:
+${contextText}
+
+TASK:
+Create EXACTLY 3 different replies that the learner can say immediately in response to the LATEST AI MESSAGE.
+
+STRICT RULES:
+- Each reply must directly answer the latest AI message or naturally continue it.
+- Never give a reply to an older question.
+- Never give generic filler such as "That sounds good", "Tell me more", or "What would you suggest?" unless the latest AI message genuinely calls for that answer.
+- If the AI asks a question, answer that exact question.
+- If the AI asks for a choice, make a concrete choice.
+- If the AI asks for a reason, give a reason.
+- If the AI asks for a place, time, name, price, purpose, duration, etc., provide that requested information.
+- Keep the replies natural and speakable for an English learner.
+- Use first person when appropriate.
+- Do not invent complicated facts that are not needed.
+- Do not include numbering, bullets, quotation marks, headings, explanations, or the word SUGGESTIONS.
+- Output exactly 3 lines and nothing else.`;
+      try{
+        const res=await fetch(BACKEND_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
+          system_prompt:prompt,
+          messages:[{sender:"AI",text:speech}]
+        })});
+        if(!res.ok) throw new Error("Suggestion request failed");
+        const data=await res.json();
+        const generated=normalizeHints(String(data.reply||"").split(/\n+/));
+        if(generated.length>=3) return generated.slice(0,3);
+      }catch(e){
+        console.warn("Contextual suggestion generation failed; using exact-question fallback.",e);
       }
-      hints=[...new Set(hints)].slice(0,3);
-      if(hints.length<2) hints=makeContextualSuggestions(speechPart,mode);
-      return {speech:cleanSpokenDialogue(speechPart),hints:hints.slice(0,3)};
+      return makeScenarioFallbackSuggestions(speech,mode);
     }
 
-    function renderHints(containerId,hints,onSelect) {
-      const box=document.getElementById(containerId); box.innerHTML="";
+    // Always regenerate. This deliberately ignores suggestions bundled into the
+    // main AI response because those are the source of stale/random suggestions.
+    async function getFreshSuggestions(parsed,{history,mode,scenario}){
+      return generateContextualSuggestions({speech:parsed.speech,history,mode,scenario});
+    }
+
+    function parseAIResponseWithHints(rawText,mode="conversation"){
+      const parsed=extractHints(rawText);
+      return {speech:cleanSpokenDialogue(parsed.speech),hints:normalizeHints(parsed.hints)};
+    }
+
+    function renderHints(containerId,hints,onSelect){
+      const box=document.getElementById(containerId);
+      box.innerHTML="";
       (hints||[]).slice(0,3).forEach(h=>{
-        const chip=document.createElement("button"); chip.className="hint-chip"; chip.textContent=`💡 "${h}"`;
-        chip.onclick=()=>onSelect(h); box.appendChild(chip);
+        const chip=document.createElement("button");
+        chip.className="hint-chip";
+        chip.type="button";
+        chip.textContent=`💡 "${h}"`;
+        chip.onclick=()=>onSelect(h);
+        box.appendChild(chip);
       });
     }
 
@@ -718,112 +805,269 @@
 
     async function sendRoleplayChat(customText) {
       const input=document.getElementById("roleplayInput");
-      const text=(customText||input.value).trim(); if(!text) return;
-      if(!customText){input.value=""; analyzeUserInput(text); appendMessage("roleplayChatMessages","You",text);}
+      const text=(customText||input.value).trim();
+      if(!text) return;
+      if(!customText){
+        input.value="";
+        analyzeUserInput(text);
+        appendMessage("roleplayChatMessages","You",text);
+      }
       roleplayHistory.push({sender:customText?"System":"You",text});
-      const prompt=`${currentRoleplay.role}\nRULES:\n1. Speak in natural, direct dialogue, max 2 sentences.\n2. Never output actions, stage notes, parentheses, or asterisks.\n3. ALWAYS put SUGGESTIONS: on a new line, followed by exactly 3 complete, natural replies that directly fit your question.\n4. Suggestions must be different from each other and must help the learner continue the current scenario.`;
+
+      const prompt=`${currentRoleplay.role}
+RULES:
+1. Speak in natural, direct dialogue, max 2 sentences.
+2. Never output actions, stage notes, parentheses, or asterisks.
+3. Ask or say ONE clear thing that gives the learner an obvious next reply.
+4. Do not include suggestions in your response. The app generates them separately.
+5. Stay in character and continue the current scenario.`;
       try{
         const res=await fetch(BACKEND_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({system_prompt:prompt,messages:roleplayHistory})});
+        if(!res.ok) throw new Error("Roleplay request failed");
         const data=await res.json();
         const parsed=parseAIResponseWithHints(data.reply||"How can I help you?","roleplay");
-        appendMessage("roleplayChatMessages","AI",parsed.speech); roleplayHistory.push({sender:"AI",text:parsed.speech});
-        // Fresh hints are rendered on EVERY AI turn, even if the backend forgets SUGGESTIONS:.
-        renderHints("roleplayHints",parsed.hints,hint=>sendRoleplayChat(hint));
+        appendMessage("roleplayChatMessages","AI",parsed.speech);
+        roleplayHistory.push({sender:"AI",text:parsed.speech});
+
+        // OLD suggestions are replaced ONLY after we have the NEW AI message.
+        const hints=await getFreshSuggestions(parsed,{
+          history:roleplayHistory,
+          mode:"roleplay",
+          scenario:`${currentRoleplay.title}: ${currentRoleplay.desc}`
+        });
+        renderHints("roleplayHints",hints,hint=>sendRoleplayChat(hint));
         speakText(parsed.speech);
-      }catch{ appendMessage("roleplayChatMessages","AI","Connection error. Please try again."); }
+      }catch(e){
+        appendMessage("roleplayChatMessages","AI","Connection error. Please try again.");
+      }
     }
 
     // --- 10. TAB 4: Dedicated AI Call ---
-    let callHistory=[]; let inCall=false; let callState="IDLE"; let thinkingTimer=null; let latestCallHints=[];
+    let callHistory=[];
+    let inCall=false;
+    let callState="IDLE"; // IDLE -> AI_SPEAKING -> LISTENING -> THINKING -> AI_SPEAKING
+    let thinkingTimer=null;
+    let latestCallHints=[];
+    let callSuggestionRequestId=0;
+
     const CALL_PROMPT=`You are a friend chatting on an active phone call.
 RULES:
 1. Speak casually in 1-2 short spoken sentences.
 2. No actions, descriptions, parentheses, or asterisks.
-3. ALWAYS end with SUGGESTIONS: on a new line followed by exactly 3 short, natural sentences the user could say back.`;
+3. Ask one clear, answerable question or make one clear conversational point.
+4. Do not write SUGGESTIONS. The app generates fresh suggestions separately.
+5. Respond directly to the learner's latest message and keep the conversation moving.`;
 
-    function stopCallRecognition(){ if(rec){try{rec.abort();}catch(e){} } isRecActive=false; }
-    function clearCallTimer(){ if(thinkingTimer!==null){clearInterval(thinkingTimer);thinkingTimer=null;} }
+    function stopCallRecognition(){
+      if(rec){try{rec.abort();}catch(e){}}
+      isRecActive=false;
+    }
+    function clearCallTimer(){
+      if(thinkingTimer!==null){clearInterval(thinkingTimer);thinkingTimer=null;}
+    }
+
+    async function prepareCallSuggestions(speech,history,requestId){
+      const hints=await getFreshSuggestions({speech,hints:[]},{
+        history,
+        mode:"call",
+        scenario:"Friendly phone call between two people"
+      });
+      // Do not let an old async suggestion request overwrite a newer call turn.
+      if(inCall && requestId===callSuggestionRequestId){
+        latestCallHints=hints;
+      }
+      return hints;
+    }
 
     function toggleCallMode(){
-      inCall=!inCall; const btn=document.getElementById("callToggleBtn"),ring=document.getElementById("callAvatar"),status=document.getElementById("callStatus");
-      clearCallTimer(); document.getElementById("callTimerNotice").textContent=""; document.getElementById("callHintsContainer").innerHTML="";
+      inCall=!inCall;
+      const btn=document.getElementById("callToggleBtn");
+      const ring=document.getElementById("callAvatar");
+      const status=document.getElementById("callStatus");
+      clearCallTimer();
+      callSuggestionRequestId++;
+      document.getElementById("callTimerNotice").textContent="";
+      document.getElementById("callHintsContainer").innerHTML="";
+
       if(inCall){
-        btn.textContent="End Call"; btn.style.background="#dc2626"; ring.classList.add("active"); callState="AI_SPEAKING";
-        const greeting="Hey, it's me! How are you doing today?"; callHistory=[{sender:"AI",text:greeting}]; status.textContent=greeting;
-        latestCallHints=["I’m doing well, thanks. How about you?","I’m having a good day. What are you up to?","I wanted to catch up with you for a bit."];
-        // IMPORTANT: no microphone starts until TTS has completely finished.
+        btn.textContent="End Call";
+        btn.style.background="#dc2626";
+        ring.classList.add("active");
+        callState="AI_SPEAKING";
+
+        const greeting="Hey, it's me! How are you doing today?";
+        callHistory=[{sender:"AI",text:greeting}];
+        status.textContent=greeting;
+
+        const requestId=callSuggestionRequestId;
+        // Prepare the replies silently while the greeting is being spoken.
+        latestCallHints=[];
+        prepareCallSuggestions(greeting,callHistory,requestId);
+        // IMPORTANT: microphone starts only after TTS onend.
         speakText(greeting,()=>startCallListeningLoop());
       }else{
-        btn.textContent="📞 Start Call"; btn.style.background="var(--accent)"; ring.classList.remove("active","pulsing"); status.textContent="Call ended.";
-        callState="IDLE"; clearCallTimer(); stopCallRecognition(); window.speechSynthesis.cancel();
+        btn.textContent="📞 Start Call";
+        btn.style.background="var(--accent)";
+        ring.classList.remove("active","pulsing");
+        status.textContent="Call ended.";
+        callState="IDLE";
+        clearCallTimer();
+        stopCallRecognition();
+        window.speechSynthesis.cancel();
       }
     }
 
     function renderPassiveCallHints(hints){
-      const box=document.getElementById("callHintsContainer"); box.innerHTML="";
-      (hints||[]).slice(0,3).forEach(h=>{const item=document.createElement("div");item.className="call-hint-passive";item.textContent=`🗣️ Idea to speak: "${h}"`;box.appendChild(item);});
+      const box=document.getElementById("callHintsContainer");
+      box.innerHTML="";
+      (hints||[]).slice(0,3).forEach(h=>{
+        const item=document.createElement("div");
+        item.className="call-hint-passive";
+        item.textContent=`🗣️ Idea to speak: "${h}"`;
+        box.appendChild(item);
+      });
     }
 
     function startCallListeningLoop(){
       if(!inCall) return;
-      callState="LISTENING"; const ring=document.getElementById("callAvatar"); ring.classList.add("pulsing");
+      callState="LISTENING";
+      const ring=document.getElementById("callAvatar");
+      ring.classList.add("pulsing");
       document.getElementById("callStatus").textContent="Listening... Take your time and speak whenever you’re ready.";
+
+      // Suggestions from the previous turn are never shown on the new turn.
       document.getElementById("callHintsContainer").innerHTML="";
-      clearCallTimer(); let secondsLeft=10; document.getElementById("callTimerNotice").textContent=`Thinking time: ${secondsLeft}s`;
-      // Mic starts only in LISTENING state. The timer only reveals hints; it NEVER triggers AI speech.
+      clearCallTimer();
+      let secondsLeft=10;
+      document.getElementById("callTimerNotice").textContent=`Thinking time: ${secondsLeft}s`;
+
+      // Mic remains active independently of the passive suggestion timer.
       safeStartRec();
+
       thinkingTimer=setInterval(()=>{
-        if(!inCall||callState!=="LISTENING"){clearCallTimer();return;}
+        if(!inCall || callState!=="LISTENING"){
+          clearCallTimer();
+          return;
+        }
         secondsLeft--;
-        if(secondsLeft>0) document.getElementById("callTimerNotice").textContent=`Thinking time: ${secondsLeft}s`;
-        else{clearCallTimer();document.getElementById("callTimerNotice").textContent="💡 Ideas for what to say (read aloud whenever you’re ready):";renderPassiveCallHints(latestCallHints);}
+        if(secondsLeft>0){
+          document.getElementById("callTimerNotice").textContent=`Thinking time: ${secondsLeft}s`;
+        }else{
+          clearCallTimer();
+          document.getElementById("callTimerNotice").textContent="💡 Ideas for what to say (read aloud whenever you’re ready):";
+          // Showing these hints NEVER changes callState and NEVER stops the mic.
+          renderPassiveCallHints(latestCallHints.length?latestCallHints:["Take your time and answer the question in your own words."]);
+        }
       },1000);
     }
 
     async function handleCallExchange(spokenText){
-      if(!inCall||callState!=="LISTENING") return;
-      callState="THINKING"; clearCallTimer(); stopCallRecognition();
-      document.getElementById("callTimerNotice").textContent=""; document.getElementById("callHintsContainer").innerHTML=""; document.getElementById("callAvatar").classList.remove("pulsing");
-      analyzeUserInput(spokenText); callHistory.push({sender:"You",text:spokenText}); document.getElementById("callStatus").textContent="Thinking...";
+      if(!inCall || callState!=="LISTENING") return;
+      callState="THINKING";
+      clearCallTimer();
+      stopCallRecognition();
+      document.getElementById("callTimerNotice").textContent="";
+      document.getElementById("callHintsContainer").innerHTML="";
+      document.getElementById("callAvatar").classList.remove("pulsing");
+      analyzeUserInput(spokenText);
+      callHistory.push({sender:"You",text:spokenText});
+      document.getElementById("callStatus").textContent="Thinking...";
+
       try{
         const res=await fetch(BACKEND_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({system_prompt:CALL_PROMPT,messages:callHistory})});
-        const data=await res.json(); const parsed=parseAIResponseWithHints(data.reply||"Could you say that once more?","call"); latestCallHints=parsed.hints;
-        callHistory.push({sender:"AI",text:parsed.speech}); document.getElementById("callStatus").textContent=parsed.speech; callState="AI_SPEAKING";
-        // Suggestions stay silent and are only shown after the next 10-second thinking window.
+        if(!res.ok) throw new Error("Call request failed");
+        const data=await res.json();
+        const parsed=parseAIResponseWithHints(data.reply||"Could you say that once more?","call");
+        callHistory.push({sender:"AI",text:parsed.speech});
+        document.getElementById("callStatus").textContent=parsed.speech;
+
+        // Every new AI message gets a brand-new suggestion request.
+        callSuggestionRequestId++;
+        const requestId=callSuggestionRequestId;
+        latestCallHints=[];
+        prepareCallSuggestions(parsed.speech,callHistory,requestId);
+
+        callState="AI_SPEAKING";
+        // Suggestions are silent. TTS must finish before the mic opens again.
         speakText(parsed.speech,()=>startCallListeningLoop());
-      }catch{callState="LISTENING";document.getElementById("callStatus").textContent="Connection issue. You can try speaking again.";startCallListeningLoop();}
+      }catch(e){
+        callState="LISTENING";
+        document.getElementById("callStatus").textContent="Connection issue. You can try speaking again.";
+        startCallListeningLoop();
+      }
     }
 
     // --- 11. Speech Recognition Engine ---
     const SpeechRec=window.SpeechRecognition||window.webkitSpeechRecognition;
-    let rec=SpeechRec?new SpeechRec():null; let activeRecTarget="journey"; let isRecActive=false;
+    let rec=SpeechRec?new SpeechRec():null;
+    let activeRecTarget="journey";
+    let isRecActive=false;
+
     if(rec){
-      rec.continuous=false; rec.interimResults=false; rec.lang="en-US";
+      rec.continuous=false;
+      rec.interimResults=false;
+      rec.lang="en-US";
+
       rec.onstart=()=>{isRecActive=true;};
+
       rec.onend=()=>{
         isRecActive=false;
-        ["journeyMicBtn","libraryMicBtn","roleplayMicBtn"].forEach(id=>{const b=document.getElementById(id);if(b){b.classList.remove("recording");b.textContent="🎤 Speak";}});
-        // Browser recognition is single-shot. Restart ONLY while the call is genuinely waiting for the user.
-        if(inCall&&callState==="LISTENING") setTimeout(()=>safeStartRec(),200);
+        ["journeyMicBtn","libraryMicBtn","roleplayMicBtn"].forEach(id=>{
+          const b=document.getElementById(id);
+          if(b){b.classList.remove("recording");b.textContent="🎤 Speak";}
+        });
+
+        // Chrome/Edge SpeechRecognition is often single-shot. During a call we
+        // restart it only while the call is actually waiting for the learner.
+        if(inCall && callState==="LISTENING"){
+          setTimeout(()=>{
+            if(inCall && callState==="LISTENING") safeStartRec();
+          },200);
+        }
       };
+
       rec.onerror=e=>{
         isRecActive=false;
-        if(inCall&&callState==="LISTENING"&&e.error!=="aborted") setTimeout(()=>safeStartRec(),500);
+        if(inCall && callState==="LISTENING" && e.error!=="aborted"){
+          setTimeout(()=>{
+            if(inCall && callState==="LISTENING") safeStartRec();
+          },500);
+        }
       };
+
       rec.onresult=e=>{
-        const transcript=e.results[0][0].transcript.trim(); if(!transcript) return;
-        if(inCall){ if(callState==="LISTENING") handleCallExchange(transcript); return; }
-        if(activeRecTarget==="journey"){document.getElementById("journeyInput").value=transcript;sendJourneyChat();}
-        else if(activeRecTarget==="library"){document.getElementById("libraryInput").value=transcript;sendLibraryChat();}
-        else if(activeRecTarget==="roleplay"){document.getElementById("roleplayInput").value=transcript;sendRoleplayChat();}
+        const transcript=e.results[0][0].transcript.trim();
+        if(!transcript) return;
+
+        if(inCall){
+          if(callState==="LISTENING") handleCallExchange(transcript);
+          return;
+        }
+
+        if(activeRecTarget==="journey"){
+          document.getElementById("journeyInput").value=transcript;
+          sendJourneyChat();
+        }else if(activeRecTarget==="library"){
+          document.getElementById("libraryInput").value=transcript;
+          sendLibraryChat();
+        }else if(activeRecTarget==="roleplay"){
+          document.getElementById("roleplayInput").value=transcript;
+          sendRoleplayChat();
+        }
       };
     }
-    function safeStartRec(){ if(!rec||isRecActive) return; try{rec.start();}catch(e){} }
+
+    function safeStartRec(){
+      if(!rec || isRecActive) return;
+      try{rec.start();}catch(e){ /* recognition may already be starting */ }
+    }
 
     function toggleSpeechRec(target){
-      activeRecTarget=target; window.speechSynthesis.cancel();
+      activeRecTarget=target;
+      window.speechSynthesis.cancel();
       if(target==="call") return;
-      const btn=document.getElementById(`${target}MicBtn`); if(btn){btn.classList.add("recording");btn.textContent="🛑 Listening...";}
+      const btn=document.getElementById(`${target}MicBtn`);
+      if(btn){btn.classList.add("recording");btn.textContent="🛑 Listening...";}
       safeStartRec();
     }
   </script>
