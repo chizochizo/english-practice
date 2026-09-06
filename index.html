@@ -126,7 +126,7 @@
       <div id="journeyHints" class="hints-wrapper"></div>
       <div class="inline-chat-bar">
         <button id="journeyMicBtn" class="btn btn-mic" onclick="toggleSpeechRec('journey')">🎤 Speak</button>
-        <input type="text" id="journeyInput" placeholder="Speak your answer or click a suggestion..." />
+        <input type="text" id="journeyInput" placeholder="Repeat the sentence or use a suggestion..." />
         <button class="btn" onclick="sendJourneyChat()">Send</button>
       </div>
     </div>
@@ -305,34 +305,85 @@
     }
     checkDailyStreak();
 
-    // --- 2. 1-100 Progression Stages ---
-    const STAGES = [
-      { id: 1, title: "Day & Meal Basics", desc: "Master morning, afternoon, evening, night, lunch & breakfast terms.", prompt: "Teach Level 1: Introduce morning, afternoon, evening, night, lunch, and breakfast. Ask what I ate for lunch today." },
-      { id: 2, title: "Greetings & Self Intro", desc: "Introduce your name, origin, hobbies, and polite greetings.", prompt: "Teach Level 2: Practice greetings and self-introductions. Ask where I am from and what I do." },
-      { id: 3, title: "Daily Routines", desc: "Describe habits and schedules using present simple tense.", prompt: "Teach Level 3: Practice daily routines using simple present tense. Ask what time I wake up." },
-      { id: 4, title: "Likes & Dislikes", desc: "Express preferences with 'I prefer', 'I enjoy', and 'I dislike'.", prompt: "Teach Level 4: Practice expressing likes and dislikes. Ask what food or music I enjoy." },
-      { id: 5, title: "Asking Directions", desc: "Learn key phrases: turn left, right, straight ahead, near.", prompt: "Teach Level 5: Teach direction vocabulary. Ask how to get to the nearest station." }
-    ];
+    const STAGES = [{"id":1,"title":"Foundation & Greetings","desc":"Level 1: Foundation & Greetings. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Hello / Hi","teacher":"Hello.","instruction":"Listen first, then repeat: “Hello.”","target":"Hello."},{"id":2,"title":"Good Morning","teacher":"Good morning.","instruction":"Now you try. Repeat: “Good morning.”","target":"Good morning."},{"id":3,"title":"Good Afternoon","teacher":"Good afternoon.","instruction":"Listen and repeat: “Good afternoon.”","target":"Good afternoon."},{"id":4,"title":"Good Evening","teacher":"Good evening.","instruction":"Listen and repeat: “Good evening.”","target":"Good evening."},{"id":5,"title":"How are you?","teacher":"How are you?","instruction":"Your turn. Repeat: “How are you?”","target":"How are you?"},{"id":6,"title":"I’m Fine","teacher":"I’m fine, thank you.","instruction":"Listen and repeat: “I’m fine, thank you.”","target":"I’m fine, thank you."},{"id":7,"title":"Nice to Meet You","teacher":"Nice to meet you.","instruction":"Repeat: “Nice to meet you.”","target":"Nice to meet you."},{"id":8,"title":"My Name Is...","teacher":"My name is Maya.","instruction":"Now say your name: “My name is …”","target":"My name is"},{"id":9,"title":"What’s Your Name?","teacher":"What’s your name?","instruction":"Repeat the question: “What’s your name?”","target":"What’s your name?"},{"id":10,"title":"Level 1 Review","teacher":"Good morning! What’s your name?","instruction":"Try the full greeting. Say hello, your name, and ask my name.","target":"Hello"}]},{"id":2,"title":"Foundation & Greetings","desc":"Level 2: Foundation & Greetings. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Hello"},{"id":2,"title":"Good morning"},{"id":3,"title":"Good afternoon"},{"id":4,"title":"Good evening"},{"id":5,"title":"How are you?"},{"id":6,"title":"I’m fine"},{"id":7,"title":"My name is..."},{"id":8,"title":"What’s your name?"},{"id":9,"title":"Nice to meet you"},{"id":10,"title":"Review & confidence"}]},{"id":3,"title":"Foundation & Greetings","desc":"Level 3: Foundation & Greetings. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Hello"},{"id":2,"title":"Good morning"},{"id":3,"title":"Good afternoon"},{"id":4,"title":"Good evening"},{"id":5,"title":"How are you?"},{"id":6,"title":"I’m fine"},{"id":7,"title":"My name is..."},{"id":8,"title":"What’s your name?"},{"id":9,"title":"Nice to meet you"},{"id":10,"title":"Review & confidence"}]},{"id":4,"title":"Foundation & Greetings","desc":"Level 4: Foundation & Greetings. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Hello"},{"id":2,"title":"Good morning"},{"id":3,"title":"Good afternoon"},{"id":4,"title":"Good evening"},{"id":5,"title":"How are you?"},{"id":6,"title":"I’m fine"},{"id":7,"title":"My name is..."},{"id":8,"title":"What’s your name?"},{"id":9,"title":"Nice to meet you"},{"id":10,"title":"Review & confidence"}]},{"id":5,"title":"Foundation & Greetings","desc":"Level 5: Foundation & Greetings. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Hello"},{"id":2,"title":"Good morning"},{"id":3,"title":"Good afternoon"},{"id":4,"title":"Good evening"},{"id":5,"title":"How are you?"},{"id":6,"title":"I’m fine"},{"id":7,"title":"My name is..."},{"id":8,"title":"What’s your name?"},{"id":9,"title":"Nice to meet you"},{"id":10,"title":"Review & confidence"}]},{"id":6,"title":"Foundation & Greetings","desc":"Level 6: Foundation & Greetings. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Hello"},{"id":2,"title":"Good morning"},{"id":3,"title":"Good afternoon"},{"id":4,"title":"Good evening"},{"id":5,"title":"How are you?"},{"id":6,"title":"I’m fine"},{"id":7,"title":"My name is..."},{"id":8,"title":"What’s your name?"},{"id":9,"title":"Nice to meet you"},{"id":10,"title":"Review & confidence"}]},{"id":7,"title":"Foundation & Greetings","desc":"Level 7: Foundation & Greetings. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Hello"},{"id":2,"title":"Good morning"},{"id":3,"title":"Good afternoon"},{"id":4,"title":"Good evening"},{"id":5,"title":"How are you?"},{"id":6,"title":"I’m fine"},{"id":7,"title":"My name is..."},{"id":8,"title":"What’s your name?"},{"id":9,"title":"Nice to meet you"},{"id":10,"title":"Review & confidence"}]},{"id":8,"title":"Foundation & Greetings","desc":"Level 8: Foundation & Greetings. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Hello"},{"id":2,"title":"Good morning"},{"id":3,"title":"Good afternoon"},{"id":4,"title":"Good evening"},{"id":5,"title":"How are you?"},{"id":6,"title":"I’m fine"},{"id":7,"title":"My name is..."},{"id":8,"title":"What’s your name?"},{"id":9,"title":"Nice to meet you"},{"id":10,"title":"Review & confidence"}]},{"id":9,"title":"Foundation & Greetings","desc":"Level 9: Foundation & Greetings. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Hello"},{"id":2,"title":"Good morning"},{"id":3,"title":"Good afternoon"},{"id":4,"title":"Good evening"},{"id":5,"title":"How are you?"},{"id":6,"title":"I’m fine"},{"id":7,"title":"My name is..."},{"id":8,"title":"What’s your name?"},{"id":9,"title":"Nice to meet you"},{"id":10,"title":"Review & confidence"}]},{"id":10,"title":"Foundation & Greetings","desc":"Level 10: Foundation & Greetings. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Hello"},{"id":2,"title":"Good morning"},{"id":3,"title":"Good afternoon"},{"id":4,"title":"Good evening"},{"id":5,"title":"How are you?"},{"id":6,"title":"I’m fine"},{"id":7,"title":"My name is..."},{"id":8,"title":"What’s your name?"},{"id":9,"title":"Nice to meet you"},{"id":10,"title":"Review & confidence"}]},{"id":11,"title":"Everyday Basics","desc":"Level 11: Everyday Basics. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Family"},{"id":2,"title":"Home"},{"id":3,"title":"Food"},{"id":4,"title":"Drinks"},{"id":5,"title":"Numbers & prices"},{"id":6,"title":"Time"},{"id":7,"title":"Days & dates"},{"id":8,"title":"Colors & objects"},{"id":9,"title":"Weather"},{"id":10,"title":"Review & confidence"}]},{"id":12,"title":"Everyday Basics","desc":"Level 12: Everyday Basics. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Family"},{"id":2,"title":"Home"},{"id":3,"title":"Food"},{"id":4,"title":"Drinks"},{"id":5,"title":"Numbers & prices"},{"id":6,"title":"Time"},{"id":7,"title":"Days & dates"},{"id":8,"title":"Colors & objects"},{"id":9,"title":"Weather"},{"id":10,"title":"Review & confidence"}]},{"id":13,"title":"Everyday Basics","desc":"Level 13: Everyday Basics. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Family"},{"id":2,"title":"Home"},{"id":3,"title":"Food"},{"id":4,"title":"Drinks"},{"id":5,"title":"Numbers & prices"},{"id":6,"title":"Time"},{"id":7,"title":"Days & dates"},{"id":8,"title":"Colors & objects"},{"id":9,"title":"Weather"},{"id":10,"title":"Review & confidence"}]},{"id":14,"title":"Everyday Basics","desc":"Level 14: Everyday Basics. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Family"},{"id":2,"title":"Home"},{"id":3,"title":"Food"},{"id":4,"title":"Drinks"},{"id":5,"title":"Numbers & prices"},{"id":6,"title":"Time"},{"id":7,"title":"Days & dates"},{"id":8,"title":"Colors & objects"},{"id":9,"title":"Weather"},{"id":10,"title":"Review & confidence"}]},{"id":15,"title":"Everyday Basics","desc":"Level 15: Everyday Basics. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Family"},{"id":2,"title":"Home"},{"id":3,"title":"Food"},{"id":4,"title":"Drinks"},{"id":5,"title":"Numbers & prices"},{"id":6,"title":"Time"},{"id":7,"title":"Days & dates"},{"id":8,"title":"Colors & objects"},{"id":9,"title":"Weather"},{"id":10,"title":"Review & confidence"}]},{"id":16,"title":"Everyday Basics","desc":"Level 16: Everyday Basics. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Family"},{"id":2,"title":"Home"},{"id":3,"title":"Food"},{"id":4,"title":"Drinks"},{"id":5,"title":"Numbers & prices"},{"id":6,"title":"Time"},{"id":7,"title":"Days & dates"},{"id":8,"title":"Colors & objects"},{"id":9,"title":"Weather"},{"id":10,"title":"Review & confidence"}]},{"id":17,"title":"Everyday Basics","desc":"Level 17: Everyday Basics. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Family"},{"id":2,"title":"Home"},{"id":3,"title":"Food"},{"id":4,"title":"Drinks"},{"id":5,"title":"Numbers & prices"},{"id":6,"title":"Time"},{"id":7,"title":"Days & dates"},{"id":8,"title":"Colors & objects"},{"id":9,"title":"Weather"},{"id":10,"title":"Review & confidence"}]},{"id":18,"title":"Everyday Basics","desc":"Level 18: Everyday Basics. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Family"},{"id":2,"title":"Home"},{"id":3,"title":"Food"},{"id":4,"title":"Drinks"},{"id":5,"title":"Numbers & prices"},{"id":6,"title":"Time"},{"id":7,"title":"Days & dates"},{"id":8,"title":"Colors & objects"},{"id":9,"title":"Weather"},{"id":10,"title":"Review & confidence"}]},{"id":19,"title":"Everyday Basics","desc":"Level 19: Everyday Basics. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Family"},{"id":2,"title":"Home"},{"id":3,"title":"Food"},{"id":4,"title":"Drinks"},{"id":5,"title":"Numbers & prices"},{"id":6,"title":"Time"},{"id":7,"title":"Days & dates"},{"id":8,"title":"Colors & objects"},{"id":9,"title":"Weather"},{"id":10,"title":"Review & confidence"}]},{"id":20,"title":"Everyday Basics","desc":"Level 20: Everyday Basics. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Family"},{"id":2,"title":"Home"},{"id":3,"title":"Food"},{"id":4,"title":"Drinks"},{"id":5,"title":"Numbers & prices"},{"id":6,"title":"Time"},{"id":7,"title":"Days & dates"},{"id":8,"title":"Colors & objects"},{"id":9,"title":"Weather"},{"id":10,"title":"Review & confidence"}]},{"id":21,"title":"Daily Life","desc":"Level 21: Daily Life. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Wake up & get ready"},{"id":2,"title":"Morning routine"},{"id":3,"title":"Work & study"},{"id":4,"title":"Free time"},{"id":5,"title":"Hobbies"},{"id":6,"title":"Shopping"},{"id":7,"title":"Transport"},{"id":8,"title":"Places in town"},{"id":9,"title":"Simple questions"},{"id":10,"title":"Review & confidence"}]},{"id":22,"title":"Daily Life","desc":"Level 22: Daily Life. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Wake up & get ready"},{"id":2,"title":"Morning routine"},{"id":3,"title":"Work & study"},{"id":4,"title":"Free time"},{"id":5,"title":"Hobbies"},{"id":6,"title":"Shopping"},{"id":7,"title":"Transport"},{"id":8,"title":"Places in town"},{"id":9,"title":"Simple questions"},{"id":10,"title":"Review & confidence"}]},{"id":23,"title":"Daily Life","desc":"Level 23: Daily Life. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Wake up & get ready"},{"id":2,"title":"Morning routine"},{"id":3,"title":"Work & study"},{"id":4,"title":"Free time"},{"id":5,"title":"Hobbies"},{"id":6,"title":"Shopping"},{"id":7,"title":"Transport"},{"id":8,"title":"Places in town"},{"id":9,"title":"Simple questions"},{"id":10,"title":"Review & confidence"}]},{"id":24,"title":"Daily Life","desc":"Level 24: Daily Life. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Wake up & get ready"},{"id":2,"title":"Morning routine"},{"id":3,"title":"Work & study"},{"id":4,"title":"Free time"},{"id":5,"title":"Hobbies"},{"id":6,"title":"Shopping"},{"id":7,"title":"Transport"},{"id":8,"title":"Places in town"},{"id":9,"title":"Simple questions"},{"id":10,"title":"Review & confidence"}]},{"id":25,"title":"Daily Life","desc":"Level 25: Daily Life. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Wake up & get ready"},{"id":2,"title":"Morning routine"},{"id":3,"title":"Work & study"},{"id":4,"title":"Free time"},{"id":5,"title":"Hobbies"},{"id":6,"title":"Shopping"},{"id":7,"title":"Transport"},{"id":8,"title":"Places in town"},{"id":9,"title":"Simple questions"},{"id":10,"title":"Review & confidence"}]},{"id":26,"title":"Daily Life","desc":"Level 26: Daily Life. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Wake up & get ready"},{"id":2,"title":"Morning routine"},{"id":3,"title":"Work & study"},{"id":4,"title":"Free time"},{"id":5,"title":"Hobbies"},{"id":6,"title":"Shopping"},{"id":7,"title":"Transport"},{"id":8,"title":"Places in town"},{"id":9,"title":"Simple questions"},{"id":10,"title":"Review & confidence"}]},{"id":27,"title":"Daily Life","desc":"Level 27: Daily Life. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Wake up & get ready"},{"id":2,"title":"Morning routine"},{"id":3,"title":"Work & study"},{"id":4,"title":"Free time"},{"id":5,"title":"Hobbies"},{"id":6,"title":"Shopping"},{"id":7,"title":"Transport"},{"id":8,"title":"Places in town"},{"id":9,"title":"Simple questions"},{"id":10,"title":"Review & confidence"}]},{"id":28,"title":"Daily Life","desc":"Level 28: Daily Life. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Wake up & get ready"},{"id":2,"title":"Morning routine"},{"id":3,"title":"Work & study"},{"id":4,"title":"Free time"},{"id":5,"title":"Hobbies"},{"id":6,"title":"Shopping"},{"id":7,"title":"Transport"},{"id":8,"title":"Places in town"},{"id":9,"title":"Simple questions"},{"id":10,"title":"Review & confidence"}]},{"id":29,"title":"Daily Life","desc":"Level 29: Daily Life. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Wake up & get ready"},{"id":2,"title":"Morning routine"},{"id":3,"title":"Work & study"},{"id":4,"title":"Free time"},{"id":5,"title":"Hobbies"},{"id":6,"title":"Shopping"},{"id":7,"title":"Transport"},{"id":8,"title":"Places in town"},{"id":9,"title":"Simple questions"},{"id":10,"title":"Review & confidence"}]},{"id":30,"title":"Daily Life","desc":"Level 30: Daily Life. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Wake up & get ready"},{"id":2,"title":"Morning routine"},{"id":3,"title":"Work & study"},{"id":4,"title":"Free time"},{"id":5,"title":"Hobbies"},{"id":6,"title":"Shopping"},{"id":7,"title":"Transport"},{"id":8,"title":"Places in town"},{"id":9,"title":"Simple questions"},{"id":10,"title":"Review & confidence"}]},{"id":31,"title":"Simple Sentences","desc":"Level 31: Simple Sentences. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"I am / I’m"},{"id":2,"title":"I have"},{"id":3,"title":"I like / I don’t like"},{"id":4,"title":"I want / I need"},{"id":5,"title":"I can / I can’t"},{"id":6,"title":"There is / There are"},{"id":7,"title":"Present simple"},{"id":8,"title":"Adverbs of frequency"},{"id":9,"title":"Because / but / and"},{"id":10,"title":"Review & confidence"}]},{"id":32,"title":"Simple Sentences","desc":"Level 32: Simple Sentences. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"I am / I’m"},{"id":2,"title":"I have"},{"id":3,"title":"I like / I don’t like"},{"id":4,"title":"I want / I need"},{"id":5,"title":"I can / I can’t"},{"id":6,"title":"There is / There are"},{"id":7,"title":"Present simple"},{"id":8,"title":"Adverbs of frequency"},{"id":9,"title":"Because / but / and"},{"id":10,"title":"Review & confidence"}]},{"id":33,"title":"Simple Sentences","desc":"Level 33: Simple Sentences. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"I am / I’m"},{"id":2,"title":"I have"},{"id":3,"title":"I like / I don’t like"},{"id":4,"title":"I want / I need"},{"id":5,"title":"I can / I can’t"},{"id":6,"title":"There is / There are"},{"id":7,"title":"Present simple"},{"id":8,"title":"Adverbs of frequency"},{"id":9,"title":"Because / but / and"},{"id":10,"title":"Review & confidence"}]},{"id":34,"title":"Simple Sentences","desc":"Level 34: Simple Sentences. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"I am / I’m"},{"id":2,"title":"I have"},{"id":3,"title":"I like / I don’t like"},{"id":4,"title":"I want / I need"},{"id":5,"title":"I can / I can’t"},{"id":6,"title":"There is / There are"},{"id":7,"title":"Present simple"},{"id":8,"title":"Adverbs of frequency"},{"id":9,"title":"Because / but / and"},{"id":10,"title":"Review & confidence"}]},{"id":35,"title":"Simple Sentences","desc":"Level 35: Simple Sentences. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"I am / I’m"},{"id":2,"title":"I have"},{"id":3,"title":"I like / I don’t like"},{"id":4,"title":"I want / I need"},{"id":5,"title":"I can / I can’t"},{"id":6,"title":"There is / There are"},{"id":7,"title":"Present simple"},{"id":8,"title":"Adverbs of frequency"},{"id":9,"title":"Because / but / and"},{"id":10,"title":"Review & confidence"}]},{"id":36,"title":"Simple Sentences","desc":"Level 36: Simple Sentences. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"I am / I’m"},{"id":2,"title":"I have"},{"id":3,"title":"I like / I don’t like"},{"id":4,"title":"I want / I need"},{"id":5,"title":"I can / I can’t"},{"id":6,"title":"There is / There are"},{"id":7,"title":"Present simple"},{"id":8,"title":"Adverbs of frequency"},{"id":9,"title":"Because / but / and"},{"id":10,"title":"Review & confidence"}]},{"id":37,"title":"Simple Sentences","desc":"Level 37: Simple Sentences. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"I am / I’m"},{"id":2,"title":"I have"},{"id":3,"title":"I like / I don’t like"},{"id":4,"title":"I want / I need"},{"id":5,"title":"I can / I can’t"},{"id":6,"title":"There is / There are"},{"id":7,"title":"Present simple"},{"id":8,"title":"Adverbs of frequency"},{"id":9,"title":"Because / but / and"},{"id":10,"title":"Review & confidence"}]},{"id":38,"title":"Simple Sentences","desc":"Level 38: Simple Sentences. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"I am / I’m"},{"id":2,"title":"I have"},{"id":3,"title":"I like / I don’t like"},{"id":4,"title":"I want / I need"},{"id":5,"title":"I can / I can’t"},{"id":6,"title":"There is / There are"},{"id":7,"title":"Present simple"},{"id":8,"title":"Adverbs of frequency"},{"id":9,"title":"Because / but / and"},{"id":10,"title":"Review & confidence"}]},{"id":39,"title":"Simple Sentences","desc":"Level 39: Simple Sentences. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"I am / I’m"},{"id":2,"title":"I have"},{"id":3,"title":"I like / I don’t like"},{"id":4,"title":"I want / I need"},{"id":5,"title":"I can / I can’t"},{"id":6,"title":"There is / There are"},{"id":7,"title":"Present simple"},{"id":8,"title":"Adverbs of frequency"},{"id":9,"title":"Because / but / and"},{"id":10,"title":"Review & confidence"}]},{"id":40,"title":"Simple Sentences","desc":"Level 40: Simple Sentences. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"I am / I’m"},{"id":2,"title":"I have"},{"id":3,"title":"I like / I don’t like"},{"id":4,"title":"I want / I need"},{"id":5,"title":"I can / I can’t"},{"id":6,"title":"There is / There are"},{"id":7,"title":"Present simple"},{"id":8,"title":"Adverbs of frequency"},{"id":9,"title":"Because / but / and"},{"id":10,"title":"Review & confidence"}]},{"id":41,"title":"Guided Conversation","desc":"Level 41: Guided Conversation. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Introduce yourself"},{"id":2,"title":"Talk about family"},{"id":3,"title":"Describe your day"},{"id":4,"title":"Talk about food"},{"id":5,"title":"Talk about hobbies"},{"id":6,"title":"Make plans"},{"id":7,"title":"Ask for information"},{"id":8,"title":"Give simple directions"},{"id":9,"title":"Make polite requests"},{"id":10,"title":"Review & confidence"}]},{"id":42,"title":"Guided Conversation","desc":"Level 42: Guided Conversation. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Introduce yourself"},{"id":2,"title":"Talk about family"},{"id":3,"title":"Describe your day"},{"id":4,"title":"Talk about food"},{"id":5,"title":"Talk about hobbies"},{"id":6,"title":"Make plans"},{"id":7,"title":"Ask for information"},{"id":8,"title":"Give simple directions"},{"id":9,"title":"Make polite requests"},{"id":10,"title":"Review & confidence"}]},{"id":43,"title":"Guided Conversation","desc":"Level 43: Guided Conversation. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Introduce yourself"},{"id":2,"title":"Talk about family"},{"id":3,"title":"Describe your day"},{"id":4,"title":"Talk about food"},{"id":5,"title":"Talk about hobbies"},{"id":6,"title":"Make plans"},{"id":7,"title":"Ask for information"},{"id":8,"title":"Give simple directions"},{"id":9,"title":"Make polite requests"},{"id":10,"title":"Review & confidence"}]},{"id":44,"title":"Guided Conversation","desc":"Level 44: Guided Conversation. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Introduce yourself"},{"id":2,"title":"Talk about family"},{"id":3,"title":"Describe your day"},{"id":4,"title":"Talk about food"},{"id":5,"title":"Talk about hobbies"},{"id":6,"title":"Make plans"},{"id":7,"title":"Ask for information"},{"id":8,"title":"Give simple directions"},{"id":9,"title":"Make polite requests"},{"id":10,"title":"Review & confidence"}]},{"id":45,"title":"Guided Conversation","desc":"Level 45: Guided Conversation. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Introduce yourself"},{"id":2,"title":"Talk about family"},{"id":3,"title":"Describe your day"},{"id":4,"title":"Talk about food"},{"id":5,"title":"Talk about hobbies"},{"id":6,"title":"Make plans"},{"id":7,"title":"Ask for information"},{"id":8,"title":"Give simple directions"},{"id":9,"title":"Make polite requests"},{"id":10,"title":"Review & confidence"}]},{"id":46,"title":"Guided Conversation","desc":"Level 46: Guided Conversation. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Introduce yourself"},{"id":2,"title":"Talk about family"},{"id":3,"title":"Describe your day"},{"id":4,"title":"Talk about food"},{"id":5,"title":"Talk about hobbies"},{"id":6,"title":"Make plans"},{"id":7,"title":"Ask for information"},{"id":8,"title":"Give simple directions"},{"id":9,"title":"Make polite requests"},{"id":10,"title":"Review & confidence"}]},{"id":47,"title":"Guided Conversation","desc":"Level 47: Guided Conversation. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Introduce yourself"},{"id":2,"title":"Talk about family"},{"id":3,"title":"Describe your day"},{"id":4,"title":"Talk about food"},{"id":5,"title":"Talk about hobbies"},{"id":6,"title":"Make plans"},{"id":7,"title":"Ask for information"},{"id":8,"title":"Give simple directions"},{"id":9,"title":"Make polite requests"},{"id":10,"title":"Review & confidence"}]},{"id":48,"title":"Guided Conversation","desc":"Level 48: Guided Conversation. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Introduce yourself"},{"id":2,"title":"Talk about family"},{"id":3,"title":"Describe your day"},{"id":4,"title":"Talk about food"},{"id":5,"title":"Talk about hobbies"},{"id":6,"title":"Make plans"},{"id":7,"title":"Ask for information"},{"id":8,"title":"Give simple directions"},{"id":9,"title":"Make polite requests"},{"id":10,"title":"Review & confidence"}]},{"id":49,"title":"Guided Conversation","desc":"Level 49: Guided Conversation. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Introduce yourself"},{"id":2,"title":"Talk about family"},{"id":3,"title":"Describe your day"},{"id":4,"title":"Talk about food"},{"id":5,"title":"Talk about hobbies"},{"id":6,"title":"Make plans"},{"id":7,"title":"Ask for information"},{"id":8,"title":"Give simple directions"},{"id":9,"title":"Make polite requests"},{"id":10,"title":"Review & confidence"}]},{"id":50,"title":"Guided Conversation","desc":"Level 50: Guided Conversation. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Introduce yourself"},{"id":2,"title":"Talk about family"},{"id":3,"title":"Describe your day"},{"id":4,"title":"Talk about food"},{"id":5,"title":"Talk about hobbies"},{"id":6,"title":"Make plans"},{"id":7,"title":"Ask for information"},{"id":8,"title":"Give simple directions"},{"id":9,"title":"Make polite requests"},{"id":10,"title":"Review & confidence"}]},{"id":51,"title":"Real-World English","desc":"Level 51: Real-World English. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Cafe order"},{"id":2,"title":"Restaurant order"},{"id":3,"title":"Grocery shopping"},{"id":4,"title":"Hotel check-in"},{"id":5,"title":"Taxi / rideshare"},{"id":6,"title":"Airport basics"},{"id":7,"title":"Doctor visit"},{"id":8,"title":"Pharmacy"},{"id":9,"title":"Salon / barber"},{"id":10,"title":"Review & confidence"}]},{"id":52,"title":"Real-World English","desc":"Level 52: Real-World English. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Cafe order"},{"id":2,"title":"Restaurant order"},{"id":3,"title":"Grocery shopping"},{"id":4,"title":"Hotel check-in"},{"id":5,"title":"Taxi / rideshare"},{"id":6,"title":"Airport basics"},{"id":7,"title":"Doctor visit"},{"id":8,"title":"Pharmacy"},{"id":9,"title":"Salon / barber"},{"id":10,"title":"Review & confidence"}]},{"id":53,"title":"Real-World English","desc":"Level 53: Real-World English. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Cafe order"},{"id":2,"title":"Restaurant order"},{"id":3,"title":"Grocery shopping"},{"id":4,"title":"Hotel check-in"},{"id":5,"title":"Taxi / rideshare"},{"id":6,"title":"Airport basics"},{"id":7,"title":"Doctor visit"},{"id":8,"title":"Pharmacy"},{"id":9,"title":"Salon / barber"},{"id":10,"title":"Review & confidence"}]},{"id":54,"title":"Real-World English","desc":"Level 54: Real-World English. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Cafe order"},{"id":2,"title":"Restaurant order"},{"id":3,"title":"Grocery shopping"},{"id":4,"title":"Hotel check-in"},{"id":5,"title":"Taxi / rideshare"},{"id":6,"title":"Airport basics"},{"id":7,"title":"Doctor visit"},{"id":8,"title":"Pharmacy"},{"id":9,"title":"Salon / barber"},{"id":10,"title":"Review & confidence"}]},{"id":55,"title":"Real-World English","desc":"Level 55: Real-World English. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Cafe order"},{"id":2,"title":"Restaurant order"},{"id":3,"title":"Grocery shopping"},{"id":4,"title":"Hotel check-in"},{"id":5,"title":"Taxi / rideshare"},{"id":6,"title":"Airport basics"},{"id":7,"title":"Doctor visit"},{"id":8,"title":"Pharmacy"},{"id":9,"title":"Salon / barber"},{"id":10,"title":"Review & confidence"}]},{"id":56,"title":"Real-World English","desc":"Level 56: Real-World English. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Cafe order"},{"id":2,"title":"Restaurant order"},{"id":3,"title":"Grocery shopping"},{"id":4,"title":"Hotel check-in"},{"id":5,"title":"Taxi / rideshare"},{"id":6,"title":"Airport basics"},{"id":7,"title":"Doctor visit"},{"id":8,"title":"Pharmacy"},{"id":9,"title":"Salon / barber"},{"id":10,"title":"Review & confidence"}]},{"id":57,"title":"Real-World English","desc":"Level 57: Real-World English. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Cafe order"},{"id":2,"title":"Restaurant order"},{"id":3,"title":"Grocery shopping"},{"id":4,"title":"Hotel check-in"},{"id":5,"title":"Taxi / rideshare"},{"id":6,"title":"Airport basics"},{"id":7,"title":"Doctor visit"},{"id":8,"title":"Pharmacy"},{"id":9,"title":"Salon / barber"},{"id":10,"title":"Review & confidence"}]},{"id":58,"title":"Real-World English","desc":"Level 58: Real-World English. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Cafe order"},{"id":2,"title":"Restaurant order"},{"id":3,"title":"Grocery shopping"},{"id":4,"title":"Hotel check-in"},{"id":5,"title":"Taxi / rideshare"},{"id":6,"title":"Airport basics"},{"id":7,"title":"Doctor visit"},{"id":8,"title":"Pharmacy"},{"id":9,"title":"Salon / barber"},{"id":10,"title":"Review & confidence"}]},{"id":59,"title":"Real-World English","desc":"Level 59: Real-World English. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Cafe order"},{"id":2,"title":"Restaurant order"},{"id":3,"title":"Grocery shopping"},{"id":4,"title":"Hotel check-in"},{"id":5,"title":"Taxi / rideshare"},{"id":6,"title":"Airport basics"},{"id":7,"title":"Doctor visit"},{"id":8,"title":"Pharmacy"},{"id":9,"title":"Salon / barber"},{"id":10,"title":"Review & confidence"}]},{"id":60,"title":"Real-World English","desc":"Level 60: Real-World English. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Cafe order"},{"id":2,"title":"Restaurant order"},{"id":3,"title":"Grocery shopping"},{"id":4,"title":"Hotel check-in"},{"id":5,"title":"Taxi / rideshare"},{"id":6,"title":"Airport basics"},{"id":7,"title":"Doctor visit"},{"id":8,"title":"Pharmacy"},{"id":9,"title":"Salon / barber"},{"id":10,"title":"Review & confidence"}]},{"id":61,"title":"Work & Social English","desc":"Level 61: Work & Social English. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Small talk"},{"id":2,"title":"Meet a colleague"},{"id":3,"title":"Phone calls"},{"id":4,"title":"Appointments"},{"id":5,"title":"Explaining a problem"},{"id":6,"title":"Giving an opinion"},{"id":7,"title":"Agree / disagree politely"},{"id":8,"title":"Making suggestions"},{"id":9,"title":"Work updates"},{"id":10,"title":"Review & confidence"}]},{"id":62,"title":"Work & Social English","desc":"Level 62: Work & Social English. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Small talk"},{"id":2,"title":"Meet a colleague"},{"id":3,"title":"Phone calls"},{"id":4,"title":"Appointments"},{"id":5,"title":"Explaining a problem"},{"id":6,"title":"Giving an opinion"},{"id":7,"title":"Agree / disagree politely"},{"id":8,"title":"Making suggestions"},{"id":9,"title":"Work updates"},{"id":10,"title":"Review & confidence"}]},{"id":63,"title":"Work & Social English","desc":"Level 63: Work & Social English. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Small talk"},{"id":2,"title":"Meet a colleague"},{"id":3,"title":"Phone calls"},{"id":4,"title":"Appointments"},{"id":5,"title":"Explaining a problem"},{"id":6,"title":"Giving an opinion"},{"id":7,"title":"Agree / disagree politely"},{"id":8,"title":"Making suggestions"},{"id":9,"title":"Work updates"},{"id":10,"title":"Review & confidence"}]},{"id":64,"title":"Work & Social English","desc":"Level 64: Work & Social English. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Small talk"},{"id":2,"title":"Meet a colleague"},{"id":3,"title":"Phone calls"},{"id":4,"title":"Appointments"},{"id":5,"title":"Explaining a problem"},{"id":6,"title":"Giving an opinion"},{"id":7,"title":"Agree / disagree politely"},{"id":8,"title":"Making suggestions"},{"id":9,"title":"Work updates"},{"id":10,"title":"Review & confidence"}]},{"id":65,"title":"Work & Social English","desc":"Level 65: Work & Social English. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Small talk"},{"id":2,"title":"Meet a colleague"},{"id":3,"title":"Phone calls"},{"id":4,"title":"Appointments"},{"id":5,"title":"Explaining a problem"},{"id":6,"title":"Giving an opinion"},{"id":7,"title":"Agree / disagree politely"},{"id":8,"title":"Making suggestions"},{"id":9,"title":"Work updates"},{"id":10,"title":"Review & confidence"}]},{"id":66,"title":"Work & Social English","desc":"Level 66: Work & Social English. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Small talk"},{"id":2,"title":"Meet a colleague"},{"id":3,"title":"Phone calls"},{"id":4,"title":"Appointments"},{"id":5,"title":"Explaining a problem"},{"id":6,"title":"Giving an opinion"},{"id":7,"title":"Agree / disagree politely"},{"id":8,"title":"Making suggestions"},{"id":9,"title":"Work updates"},{"id":10,"title":"Review & confidence"}]},{"id":67,"title":"Work & Social English","desc":"Level 67: Work & Social English. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Small talk"},{"id":2,"title":"Meet a colleague"},{"id":3,"title":"Phone calls"},{"id":4,"title":"Appointments"},{"id":5,"title":"Explaining a problem"},{"id":6,"title":"Giving an opinion"},{"id":7,"title":"Agree / disagree politely"},{"id":8,"title":"Making suggestions"},{"id":9,"title":"Work updates"},{"id":10,"title":"Review & confidence"}]},{"id":68,"title":"Work & Social English","desc":"Level 68: Work & Social English. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Small talk"},{"id":2,"title":"Meet a colleague"},{"id":3,"title":"Phone calls"},{"id":4,"title":"Appointments"},{"id":5,"title":"Explaining a problem"},{"id":6,"title":"Giving an opinion"},{"id":7,"title":"Agree / disagree politely"},{"id":8,"title":"Making suggestions"},{"id":9,"title":"Work updates"},{"id":10,"title":"Review & confidence"}]},{"id":69,"title":"Work & Social English","desc":"Level 69: Work & Social English. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Small talk"},{"id":2,"title":"Meet a colleague"},{"id":3,"title":"Phone calls"},{"id":4,"title":"Appointments"},{"id":5,"title":"Explaining a problem"},{"id":6,"title":"Giving an opinion"},{"id":7,"title":"Agree / disagree politely"},{"id":8,"title":"Making suggestions"},{"id":9,"title":"Work updates"},{"id":10,"title":"Review & confidence"}]},{"id":70,"title":"Work & Social English","desc":"Level 70: Work & Social English. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Small talk"},{"id":2,"title":"Meet a colleague"},{"id":3,"title":"Phone calls"},{"id":4,"title":"Appointments"},{"id":5,"title":"Explaining a problem"},{"id":6,"title":"Giving an opinion"},{"id":7,"title":"Agree / disagree politely"},{"id":8,"title":"Making suggestions"},{"id":9,"title":"Work updates"},{"id":10,"title":"Review & confidence"}]},{"id":71,"title":"Fluent Everyday Speaking","desc":"Level 71: Fluent Everyday Speaking. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Past experiences"},{"id":2,"title":"Future plans"},{"id":3,"title":"Stories in sequence"},{"id":4,"title":"Comparisons"},{"id":5,"title":"Preferences & reasons"},{"id":6,"title":"Describing people"},{"id":7,"title":"Describing places"},{"id":8,"title":"Explaining how to do something"},{"id":9,"title":"Handling misunderstandings"},{"id":10,"title":"Review & confidence"}]},{"id":72,"title":"Fluent Everyday Speaking","desc":"Level 72: Fluent Everyday Speaking. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Past experiences"},{"id":2,"title":"Future plans"},{"id":3,"title":"Stories in sequence"},{"id":4,"title":"Comparisons"},{"id":5,"title":"Preferences & reasons"},{"id":6,"title":"Describing people"},{"id":7,"title":"Describing places"},{"id":8,"title":"Explaining how to do something"},{"id":9,"title":"Handling misunderstandings"},{"id":10,"title":"Review & confidence"}]},{"id":73,"title":"Fluent Everyday Speaking","desc":"Level 73: Fluent Everyday Speaking. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Past experiences"},{"id":2,"title":"Future plans"},{"id":3,"title":"Stories in sequence"},{"id":4,"title":"Comparisons"},{"id":5,"title":"Preferences & reasons"},{"id":6,"title":"Describing people"},{"id":7,"title":"Describing places"},{"id":8,"title":"Explaining how to do something"},{"id":9,"title":"Handling misunderstandings"},{"id":10,"title":"Review & confidence"}]},{"id":74,"title":"Fluent Everyday Speaking","desc":"Level 74: Fluent Everyday Speaking. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Past experiences"},{"id":2,"title":"Future plans"},{"id":3,"title":"Stories in sequence"},{"id":4,"title":"Comparisons"},{"id":5,"title":"Preferences & reasons"},{"id":6,"title":"Describing people"},{"id":7,"title":"Describing places"},{"id":8,"title":"Explaining how to do something"},{"id":9,"title":"Handling misunderstandings"},{"id":10,"title":"Review & confidence"}]},{"id":75,"title":"Fluent Everyday Speaking","desc":"Level 75: Fluent Everyday Speaking. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Past experiences"},{"id":2,"title":"Future plans"},{"id":3,"title":"Stories in sequence"},{"id":4,"title":"Comparisons"},{"id":5,"title":"Preferences & reasons"},{"id":6,"title":"Describing people"},{"id":7,"title":"Describing places"},{"id":8,"title":"Explaining how to do something"},{"id":9,"title":"Handling misunderstandings"},{"id":10,"title":"Review & confidence"}]},{"id":76,"title":"Fluent Everyday Speaking","desc":"Level 76: Fluent Everyday Speaking. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Past experiences"},{"id":2,"title":"Future plans"},{"id":3,"title":"Stories in sequence"},{"id":4,"title":"Comparisons"},{"id":5,"title":"Preferences & reasons"},{"id":6,"title":"Describing people"},{"id":7,"title":"Describing places"},{"id":8,"title":"Explaining how to do something"},{"id":9,"title":"Handling misunderstandings"},{"id":10,"title":"Review & confidence"}]},{"id":77,"title":"Fluent Everyday Speaking","desc":"Level 77: Fluent Everyday Speaking. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Past experiences"},{"id":2,"title":"Future plans"},{"id":3,"title":"Stories in sequence"},{"id":4,"title":"Comparisons"},{"id":5,"title":"Preferences & reasons"},{"id":6,"title":"Describing people"},{"id":7,"title":"Describing places"},{"id":8,"title":"Explaining how to do something"},{"id":9,"title":"Handling misunderstandings"},{"id":10,"title":"Review & confidence"}]},{"id":78,"title":"Fluent Everyday Speaking","desc":"Level 78: Fluent Everyday Speaking. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Past experiences"},{"id":2,"title":"Future plans"},{"id":3,"title":"Stories in sequence"},{"id":4,"title":"Comparisons"},{"id":5,"title":"Preferences & reasons"},{"id":6,"title":"Describing people"},{"id":7,"title":"Describing places"},{"id":8,"title":"Explaining how to do something"},{"id":9,"title":"Handling misunderstandings"},{"id":10,"title":"Review & confidence"}]},{"id":79,"title":"Fluent Everyday Speaking","desc":"Level 79: Fluent Everyday Speaking. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Past experiences"},{"id":2,"title":"Future plans"},{"id":3,"title":"Stories in sequence"},{"id":4,"title":"Comparisons"},{"id":5,"title":"Preferences & reasons"},{"id":6,"title":"Describing people"},{"id":7,"title":"Describing places"},{"id":8,"title":"Explaining how to do something"},{"id":9,"title":"Handling misunderstandings"},{"id":10,"title":"Review & confidence"}]},{"id":80,"title":"Fluent Everyday Speaking","desc":"Level 80: Fluent Everyday Speaking. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Past experiences"},{"id":2,"title":"Future plans"},{"id":3,"title":"Stories in sequence"},{"id":4,"title":"Comparisons"},{"id":5,"title":"Preferences & reasons"},{"id":6,"title":"Describing people"},{"id":7,"title":"Describing places"},{"id":8,"title":"Explaining how to do something"},{"id":9,"title":"Handling misunderstandings"},{"id":10,"title":"Review & confidence"}]},{"id":81,"title":"Natural Conversation","desc":"Level 81: Natural Conversation. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Longer answers"},{"id":2,"title":"Follow-up questions"},{"id":3,"title":"Changing topics"},{"id":4,"title":"Clarifying meaning"},{"id":5,"title":"Giving examples"},{"id":6,"title":"Expressing feelings"},{"id":7,"title":"Discussing news & ideas"},{"id":8,"title":"Problem solving"},{"id":9,"title":"Persuasion & negotiation"},{"id":10,"title":"Review & confidence"}]},{"id":82,"title":"Natural Conversation","desc":"Level 82: Natural Conversation. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Longer answers"},{"id":2,"title":"Follow-up questions"},{"id":3,"title":"Changing topics"},{"id":4,"title":"Clarifying meaning"},{"id":5,"title":"Giving examples"},{"id":6,"title":"Expressing feelings"},{"id":7,"title":"Discussing news & ideas"},{"id":8,"title":"Problem solving"},{"id":9,"title":"Persuasion & negotiation"},{"id":10,"title":"Review & confidence"}]},{"id":83,"title":"Natural Conversation","desc":"Level 83: Natural Conversation. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Longer answers"},{"id":2,"title":"Follow-up questions"},{"id":3,"title":"Changing topics"},{"id":4,"title":"Clarifying meaning"},{"id":5,"title":"Giving examples"},{"id":6,"title":"Expressing feelings"},{"id":7,"title":"Discussing news & ideas"},{"id":8,"title":"Problem solving"},{"id":9,"title":"Persuasion & negotiation"},{"id":10,"title":"Review & confidence"}]},{"id":84,"title":"Natural Conversation","desc":"Level 84: Natural Conversation. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Longer answers"},{"id":2,"title":"Follow-up questions"},{"id":3,"title":"Changing topics"},{"id":4,"title":"Clarifying meaning"},{"id":5,"title":"Giving examples"},{"id":6,"title":"Expressing feelings"},{"id":7,"title":"Discussing news & ideas"},{"id":8,"title":"Problem solving"},{"id":9,"title":"Persuasion & negotiation"},{"id":10,"title":"Review & confidence"}]},{"id":85,"title":"Natural Conversation","desc":"Level 85: Natural Conversation. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Longer answers"},{"id":2,"title":"Follow-up questions"},{"id":3,"title":"Changing topics"},{"id":4,"title":"Clarifying meaning"},{"id":5,"title":"Giving examples"},{"id":6,"title":"Expressing feelings"},{"id":7,"title":"Discussing news & ideas"},{"id":8,"title":"Problem solving"},{"id":9,"title":"Persuasion & negotiation"},{"id":10,"title":"Review & confidence"}]},{"id":86,"title":"Natural Conversation","desc":"Level 86: Natural Conversation. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Longer answers"},{"id":2,"title":"Follow-up questions"},{"id":3,"title":"Changing topics"},{"id":4,"title":"Clarifying meaning"},{"id":5,"title":"Giving examples"},{"id":6,"title":"Expressing feelings"},{"id":7,"title":"Discussing news & ideas"},{"id":8,"title":"Problem solving"},{"id":9,"title":"Persuasion & negotiation"},{"id":10,"title":"Review & confidence"}]},{"id":87,"title":"Natural Conversation","desc":"Level 87: Natural Conversation. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Longer answers"},{"id":2,"title":"Follow-up questions"},{"id":3,"title":"Changing topics"},{"id":4,"title":"Clarifying meaning"},{"id":5,"title":"Giving examples"},{"id":6,"title":"Expressing feelings"},{"id":7,"title":"Discussing news & ideas"},{"id":8,"title":"Problem solving"},{"id":9,"title":"Persuasion & negotiation"},{"id":10,"title":"Review & confidence"}]},{"id":88,"title":"Natural Conversation","desc":"Level 88: Natural Conversation. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Longer answers"},{"id":2,"title":"Follow-up questions"},{"id":3,"title":"Changing topics"},{"id":4,"title":"Clarifying meaning"},{"id":5,"title":"Giving examples"},{"id":6,"title":"Expressing feelings"},{"id":7,"title":"Discussing news & ideas"},{"id":8,"title":"Problem solving"},{"id":9,"title":"Persuasion & negotiation"},{"id":10,"title":"Review & confidence"}]},{"id":89,"title":"Natural Conversation","desc":"Level 89: Natural Conversation. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Longer answers"},{"id":2,"title":"Follow-up questions"},{"id":3,"title":"Changing topics"},{"id":4,"title":"Clarifying meaning"},{"id":5,"title":"Giving examples"},{"id":6,"title":"Expressing feelings"},{"id":7,"title":"Discussing news & ideas"},{"id":8,"title":"Problem solving"},{"id":9,"title":"Persuasion & negotiation"},{"id":10,"title":"Review & confidence"}]},{"id":90,"title":"Natural Conversation","desc":"Level 90: Natural Conversation. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Longer answers"},{"id":2,"title":"Follow-up questions"},{"id":3,"title":"Changing topics"},{"id":4,"title":"Clarifying meaning"},{"id":5,"title":"Giving examples"},{"id":6,"title":"Expressing feelings"},{"id":7,"title":"Discussing news & ideas"},{"id":8,"title":"Problem solving"},{"id":9,"title":"Persuasion & negotiation"},{"id":10,"title":"Review & confidence"}]},{"id":91,"title":"Advanced Fluency","desc":"Level 91: Advanced Fluency. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Nuanced opinions"},{"id":2,"title":"Professional discussion"},{"id":3,"title":"Debate & counterpoints"},{"id":4,"title":"Storytelling"},{"id":5,"title":"Hypothetical situations"},{"id":6,"title":"Idiomatic language"},{"id":7,"title":"Polite disagreement"},{"id":8,"title":"Presentation practice"},{"id":9,"title":"Spontaneous conversation"},{"id":10,"title":"Final fluency challenge"}]},{"id":92,"title":"Advanced Fluency","desc":"Level 92: Advanced Fluency. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Nuanced opinions"},{"id":2,"title":"Professional discussion"},{"id":3,"title":"Debate & counterpoints"},{"id":4,"title":"Storytelling"},{"id":5,"title":"Hypothetical situations"},{"id":6,"title":"Idiomatic language"},{"id":7,"title":"Polite disagreement"},{"id":8,"title":"Presentation practice"},{"id":9,"title":"Spontaneous conversation"},{"id":10,"title":"Final fluency challenge"}]},{"id":93,"title":"Advanced Fluency","desc":"Level 93: Advanced Fluency. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Nuanced opinions"},{"id":2,"title":"Professional discussion"},{"id":3,"title":"Debate & counterpoints"},{"id":4,"title":"Storytelling"},{"id":5,"title":"Hypothetical situations"},{"id":6,"title":"Idiomatic language"},{"id":7,"title":"Polite disagreement"},{"id":8,"title":"Presentation practice"},{"id":9,"title":"Spontaneous conversation"},{"id":10,"title":"Final fluency challenge"}]},{"id":94,"title":"Advanced Fluency","desc":"Level 94: Advanced Fluency. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Nuanced opinions"},{"id":2,"title":"Professional discussion"},{"id":3,"title":"Debate & counterpoints"},{"id":4,"title":"Storytelling"},{"id":5,"title":"Hypothetical situations"},{"id":6,"title":"Idiomatic language"},{"id":7,"title":"Polite disagreement"},{"id":8,"title":"Presentation practice"},{"id":9,"title":"Spontaneous conversation"},{"id":10,"title":"Final fluency challenge"}]},{"id":95,"title":"Advanced Fluency","desc":"Level 95: Advanced Fluency. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Nuanced opinions"},{"id":2,"title":"Professional discussion"},{"id":3,"title":"Debate & counterpoints"},{"id":4,"title":"Storytelling"},{"id":5,"title":"Hypothetical situations"},{"id":6,"title":"Idiomatic language"},{"id":7,"title":"Polite disagreement"},{"id":8,"title":"Presentation practice"},{"id":9,"title":"Spontaneous conversation"},{"id":10,"title":"Final fluency challenge"}]},{"id":96,"title":"Advanced Fluency","desc":"Level 96: Advanced Fluency. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Nuanced opinions"},{"id":2,"title":"Professional discussion"},{"id":3,"title":"Debate & counterpoints"},{"id":4,"title":"Storytelling"},{"id":5,"title":"Hypothetical situations"},{"id":6,"title":"Idiomatic language"},{"id":7,"title":"Polite disagreement"},{"id":8,"title":"Presentation practice"},{"id":9,"title":"Spontaneous conversation"},{"id":10,"title":"Final fluency challenge"}]},{"id":97,"title":"Advanced Fluency","desc":"Level 97: Advanced Fluency. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Nuanced opinions"},{"id":2,"title":"Professional discussion"},{"id":3,"title":"Debate & counterpoints"},{"id":4,"title":"Storytelling"},{"id":5,"title":"Hypothetical situations"},{"id":6,"title":"Idiomatic language"},{"id":7,"title":"Polite disagreement"},{"id":8,"title":"Presentation practice"},{"id":9,"title":"Spontaneous conversation"},{"id":10,"title":"Final fluency challenge"}]},{"id":98,"title":"Advanced Fluency","desc":"Level 98: Advanced Fluency. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Nuanced opinions"},{"id":2,"title":"Professional discussion"},{"id":3,"title":"Debate & counterpoints"},{"id":4,"title":"Storytelling"},{"id":5,"title":"Hypothetical situations"},{"id":6,"title":"Idiomatic language"},{"id":7,"title":"Polite disagreement"},{"id":8,"title":"Presentation practice"},{"id":9,"title":"Spontaneous conversation"},{"id":10,"title":"Final fluency challenge"}]},{"id":99,"title":"Advanced Fluency","desc":"Level 99: Advanced Fluency. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Nuanced opinions"},{"id":2,"title":"Professional discussion"},{"id":3,"title":"Debate & counterpoints"},{"id":4,"title":"Storytelling"},{"id":5,"title":"Hypothetical situations"},{"id":6,"title":"Idiomatic language"},{"id":7,"title":"Polite disagreement"},{"id":8,"title":"Presentation practice"},{"id":9,"title":"Spontaneous conversation"},{"id":10,"title":"Final fluency challenge"}]},{"id":100,"title":"Advanced Fluency","desc":"Level 100: Advanced Fluency. Learn through a structured teacher-led sequence.","lessons":[{"id":1,"title":"Nuanced opinions"},{"id":2,"title":"Professional discussion"},{"id":3,"title":"Debate & counterpoints"},{"id":4,"title":"Storytelling"},{"id":5,"title":"Hypothetical situations"},{"id":6,"title":"Idiomatic language"},{"id":7,"title":"Polite disagreement"},{"id":8,"title":"Presentation practice"},{"id":9,"title":"Spontaneous conversation"},{"id":10,"title":"Final fluency challenge"}]}];
 
     let currentStage = parseInt(localStorage.getItem("speakflow_stage") || "1", 10);
+    let currentLesson = parseInt(localStorage.getItem("speakflow_lesson") || "1", 10);
+    let journeyStep = "idle";
+    let journeyAttempts = 0;
+
+    function getCurrentStageData() { return STAGES.find(s => s.id === currentStage) || STAGES[0]; }
+    function getCurrentLessonData() { const s=getCurrentStageData(); return s.lessons.find(l=>l.id===currentLesson) || s.lessons[0]; }
     function updateStageUI() {
-      const stageData = STAGES.find(s => s.id === currentStage) || {
-        id: currentStage,
-        title: `Fluency Stage ${currentStage}`,
-        desc: `Level ${currentStage}: Conversational mastery and complex sentence structure.`,
-        prompt: `Teach Level ${currentStage}: Engage me in an interactive conversation suitable for Level ${currentStage}.`
-      };
-      document.getElementById("currentStageBadge").textContent = `Stage ${stageData.id} / 100`;
-      document.getElementById("stageTitle").textContent = stageData.title;
-      document.getElementById("stageObjective").textContent = stageData.desc;
+      const stageData=getCurrentStageData();
+      document.getElementById("currentStageBadge").textContent=`Level ${stageData.id} / 100 · Lesson ${currentLesson} / ${stageData.lessons.length}`;
+      document.getElementById("stageTitle").textContent=stageData.title;
+      document.getElementById("stageObjective").textContent=stageData.desc;
     }
     updateStageUI();
 
     function advanceStage() {
-      if (currentStage < 100) currentStage += 1;
-      localStorage.setItem("speakflow_stage", currentStage);
+      if (currentStage < 100) { currentStage += 1; currentLesson = 1; }
+      localStorage.setItem("speakflow_stage",currentStage);
+      localStorage.setItem("speakflow_lesson",currentLesson);
       updateStageUI();
       startStageLesson();
+    }
+
+    function completeJourneyLesson() {
+      const stageData=getCurrentStageData();
+      if (currentLesson < stageData.lessons.length) {
+        currentLesson += 1;
+      } else if (currentStage < 100) {
+        currentStage += 1; currentLesson = 1;
+      }
+      localStorage.setItem("speakflow_stage",currentStage);
+      localStorage.setItem("speakflow_lesson",currentLesson);
+      updateStageUI();
+      journeyStep="idle";
+      document.getElementById("journeyHints").innerHTML="";
+      appendMessage("journeyChatMessages","AI", currentStage===stageData.id ? "Excellent! Let’s move to the next lesson." : "Excellent! You unlocked the next level.");
+      setTimeout(startStageLesson,500);
+    }
+
+    function startStageLesson() {
+      const lesson=getCurrentLessonData();
+      journeyHistory=[]; journeyAttempts=0; journeyStep="listening";
+      document.getElementById("journeyChatMessages").innerHTML="";
+      document.getElementById("journeyHints").innerHTML="";
+      document.getElementById("journeyCoachContainer").style.display="flex";
+      document.getElementById("startJourneyBtn").textContent="🔄 Restart Lesson";
+      appendMessage("journeyChatMessages","AI",lesson.teacher);
+      appendMessage("journeyChatMessages","AI",lesson.instruction);
+      speakText(lesson.teacher,()=>{ setTimeout(()=>{ speakText(lesson.instruction,()=>{ journeyStep="waiting_repeat"; renderHints("journeyHints",[`🔊 Play again: ${lesson.teacher}`,`🎤 I’m ready to repeat it`],(hint)=>{ if(hint.includes("Play again")){speakText(lesson.teacher);} else {toggleSpeechRec("journey");} }); }); },350); });
+    }
+
+    async function sendJourneyChat(customText) {
+      const input=document.getElementById("journeyInput");
+      const text=(customText||input.value).trim();
+      if(!text) return;
+      input.value=""; analyzeUserInput(text);
+      appendMessage("journeyChatMessages","You",text);
+      const lesson=getCurrentLessonData();
+      const target=lesson.target||lesson.teacher;
+      journeyAttempts++;
+      const spoken=text.toLowerCase().replace(/[^a-z0-9\s]/g,"").trim();
+      const expected=target.toLowerCase().replace(/[^a-z0-9\s]/g,"").trim();
+      const key=expected.split(" ").filter(w=>w.length>2);
+      const score=key.length ? key.filter(w=>spoken.includes(w)).length/key.length : (spoken?1:0);
+      if(score>=0.7 || (currentStage>10 && spoken.length>2)) {
+        journeyStep="complete";
+        const praise=journeyAttempts===1 ? "Excellent! That was clear." : "Good job! Your repetition is getting stronger.";
+        appendMessage("journeyChatMessages","AI",praise);
+        speakText(praise,()=>{
+          renderHints("journeyHints",["🔁 Practice this lesson again","➡️ Continue to the next lesson"],(hint)=>{ if(hint.includes("again")) startStageLesson(); else completeJourneyLesson(); });
+        });
+      } else {
+        journeyStep="retry";
+        const retry="Good try. Listen once more, then repeat the sentence slowly.";
+        appendMessage("journeyChatMessages","AI",retry);
+        speakText(retry,()=>speakText(target,()=>{ journeyStep="waiting_repeat"; renderHints("journeyHints",["🔊 Play again","🎤 Try again"],(hint)=>{ if(hint.includes("Play")) speakText(target); else toggleSpeechRec("journey"); }); }));
+      }
     }
 
     // --- 3. Persistent Voice Selection ---
@@ -463,116 +514,43 @@
       box.scrollTop = box.scrollHeight;
     }
 
-    // --- 6. Robust Dynamic Suggestion Parser & Contextual Fallback ---
-    function parseAIResponseWithHints(rawText) {
-      let speechPart = rawText;
-      let hints = [];
-
-      if (rawText.includes("SUGGESTIONS:")) {
-        const parts = rawText.split("SUGGESTIONS:");
-        speechPart = parts[0].trim();
-        hints = parts[1].trim().split("\n")
-          .map(h => h.replace(/^[-*0-9.]+\s*/, '').replace(/^"|"$/g, '').trim())
-          .filter(h => h.length > 2);
-      }
-
-      if (hints.length === 0) {
-        const lower = speechPart.toLowerCase();
-        if (lower.includes("salary") || lower.includes("number") || lower.includes("factor") || lower.includes("compensat")) {
-          hints = [
-            "My expectations are based on my past experience and current market research.",
-            "I am considering the full scope of duties and technical impact for this position.",
-            "I remain flexible depending on the overall benefits and growth opportunities."
-          ];
-        } else if (lower.includes("lunch") || lower.includes("eat") || lower.includes("food") || lower.includes("breakfast")) {
-          hints = [
-            "For lunch I usually have rice and steamed vegetables.",
-            "I had a quick chicken sandwich with some juice today.",
-            "I normally eat lunch around one in the afternoon."
-          ];
-        } else if (lower.includes("where") || lower.includes("live") || lower.includes("from")) {
-          hints = [
-            "I live downtown near the city center.",
-            "I am from a quiet town in the hills, but I work here now.",
-            "I moved here a few years ago for my career."
-          ];
-        } else if (lower.includes("routine") || lower.includes("wake") || lower.includes("time")) {
-          hints = [
-            "I usually wake up at seven in the morning.",
-            "I start my day by having coffee and checking daily tasks.",
-            "I try to finish my work and sleep by eleven at night."
-          ];
-        } else {
-          hints = [
-            "Could you explain that in a slightly different way?",
-            "Yes, that makes complete sense to me.",
-            "What would you suggest as the next step?"
-          ];
-        }
-      }
-
-      return { speech: cleanSpokenDialogue(speechPart), hints: hints.slice(0, 3) };
+    // --- 6. Reliable Suggestions: always return 2-3 contextual replies ---
+    function makeContextualSuggestions(speechPart, mode="conversation") {
+      const q=speechPart.toLowerCase();
+      if(/what(?:'s| is) your name|your name/.test(q)) return ["My name is Alex.","I’m Alex. Nice to meet you.","You can call me Alex."];
+      if(/how are you|how's it going/.test(q)) return ["I’m doing well, thank you.","I’m good today. How about you?","I’m fine and feeling great."];
+      if(/where (?:are you|do you) (?:from|live)/.test(q)||/where.*from|where.*live/.test(q)) return ["I’m from India.","I live in the city center.","I’m from a small town, but I live here now."];
+      if(/what.*(eat|food|lunch|breakfast|dinner)/.test(q)) return ["I had rice and vegetables for lunch.","I usually eat something light.","I had a quick meal and some tea."];
+      if(/what.*(do|work)|job|study/.test(q)) return ["I work in technology.","I’m a student right now.","I work and study in my free time."];
+      if(/when|what time/.test(q)) return ["I usually do it in the morning.","Around seven o’clock works for me.","I normally do it after work."];
+      if(/why/.test(q)) return ["Because I really enjoy it.","I chose it because it is useful for me.","There are a few reasons, but that is the main one."];
+      if(/would you|do you|did you|can you|could you|have you/.test(q)) return ["Yes, I’d be happy to.","Sure, I can do that.","Yes. Let me explain."];
+      if(mode==="roleplay") return ["Sure, I’d like to go ahead with that.","Could you tell me a little more about the options?","Yes, that sounds good to me."];
+      return ["Yes, that sounds good to me.","I’d be happy to tell you more.","Could you explain that a little more?"];
     }
 
-    function renderHints(containerId, hints, onSelect) {
-      const box = document.getElementById(containerId);
-      box.innerHTML = "";
-      hints.forEach(h => {
-        const chip = document.createElement("button");
-        chip.className = "hint-chip";
-        chip.textContent = `💡 "${h}"`;
-        chip.onclick = () => onSelect(h);
-        box.appendChild(chip);
+    function parseAIResponseWithHints(rawText, mode="conversation") {
+      const raw=String(rawText||"").replace(/\r/g,"");
+      const markerMatch=raw.match(/\n?\s*SUGGESTIONS\s*:/i);
+      let speechPart=markerMatch ? raw.slice(0,markerMatch.index).trim() : raw.trim();
+      let hints=[];
+      if(markerMatch){
+        const tail=raw.slice(markerMatch.index+markerMatch[0].length);
+        hints=tail.split(/\n|(?=\d+[.)]\s+)/)
+          .map(h=>h.replace(/^[-*•\d.)]+\s*/,"").replace(/^['"]|['"]$/g,"").trim())
+          .filter(h=>h.length>2 && !/^suggestions:?$/i.test(h));
+      }
+      hints=[...new Set(hints)].slice(0,3);
+      if(hints.length<2) hints=makeContextualSuggestions(speechPart,mode);
+      return {speech:cleanSpokenDialogue(speechPart),hints:hints.slice(0,3)};
+    }
+
+    function renderHints(containerId,hints,onSelect) {
+      const box=document.getElementById(containerId); box.innerHTML="";
+      (hints||[]).slice(0,3).forEach(h=>{
+        const chip=document.createElement("button"); chip.className="hint-chip"; chip.textContent=`💡 "${h}"`;
+        chip.onclick=()=>onSelect(h); box.appendChild(chip);
       });
-    }
-
-    // --- 7. TAB 1: Level Journey Engine ---
-    let journeyHistory = [];
-
-    function startStageLesson() {
-      const stageData = STAGES.find(s => s.id === currentStage) || STAGES[0];
-      journeyHistory = [];
-      document.getElementById("journeyChatMessages").innerHTML = "";
-      document.getElementById("journeyCoachContainer").style.display = "flex";
-      document.getElementById("startJourneyBtn").textContent = "🔄 Restart Stage";
-      sendJourneyChat(stageData.prompt);
-    }
-
-    async function sendJourneyChat(customText) {
-      const inputElem = document.getElementById("journeyInput");
-      const text = customText || inputElem.value.trim();
-      if (!text) return;
-      if (!customText) {
-        inputElem.value = "";
-        analyzeUserInput(text);
-      }
-
-      if (!customText) appendMessage("journeyChatMessages", "You", text);
-      journeyHistory.push({ sender: customText ? "System" : "You", text });
-
-      const prompt = `You are an English tutor teaching Stage ${currentStage} of 100 (${document.getElementById('stageObjective').textContent}).
-RULES:
-1. Speak in natural conversational dialogue (max 2 sentences).
-2. Never output text in parentheses or stage actions.
-3. CRITICAL: Always end your response on a new line with 'SUGGESTIONS:' followed by 2-3 realistic complete sentences the student can say next to answer your question.`;
-
-      try {
-        const res = await fetch(BACKEND_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ system_prompt: prompt, messages: journeyHistory })
-        });
-        const data = await res.json();
-        const { speech, hints } = parseAIResponseWithHints(data.reply || "Let us continue our lesson.");
-
-        appendMessage("journeyChatMessages", "AI", speech);
-        journeyHistory.push({ sender: "AI", text: speech });
-
-        renderHints("journeyHints", hints, (hint) => sendJourneyChat(hint));
-        speakText(speech);
-      } catch {
-        appendMessage("journeyChatMessages", "AI", "Connection error. Please try again.");
-      }
     }
 
     // --- 8. TAB 2: Self-Contained Library Practice ---
@@ -739,220 +717,113 @@ RULES:
     }
 
     async function sendRoleplayChat(customText) {
-      const inputElem = document.getElementById("roleplayInput");
-      const text = customText || inputElem.value.trim();
-      if (!text) return;
-      if (!customText) {
-        inputElem.value = "";
-        analyzeUserInput(text);
-      }
-
-      if (!customText) appendMessage("roleplayChatMessages", "You", text);
-      roleplayHistory.push({ sender: customText ? "System" : "You", text });
-
-      const prompt = `${currentRoleplay.role}
-RULES:
-1. Speak in natural, direct dialogue (max 2 sentences).
-2. NO physical actions, stage notes, or text in parentheses.
-3. CRITICAL: On a new line, write 'SUGGESTIONS:' followed by 2-3 realistic answers tailored directly to what you just asked so the user knows what to reply next.`;
-
-      try {
-        const res = await fetch(BACKEND_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ system_prompt: prompt, messages: roleplayHistory })
-        });
-        const data = await res.json();
-        const { speech, hints } = parseAIResponseWithHints(data.reply || "How can I help you?");
-
-        appendMessage("roleplayChatMessages", "AI", speech);
-        roleplayHistory.push({ sender: "AI", text: speech });
-
-        renderHints("roleplayHints", hints, (hint) => sendRoleplayChat(hint));
-        speakText(speech);
-      } catch {
-        appendMessage("roleplayChatMessages", "AI", "Connection error.");
-      }
+      const input=document.getElementById("roleplayInput");
+      const text=(customText||input.value).trim(); if(!text) return;
+      if(!customText){input.value=""; analyzeUserInput(text); appendMessage("roleplayChatMessages","You",text);}
+      roleplayHistory.push({sender:customText?"System":"You",text});
+      const prompt=`${currentRoleplay.role}\nRULES:\n1. Speak in natural, direct dialogue, max 2 sentences.\n2. Never output actions, stage notes, parentheses, or asterisks.\n3. ALWAYS put SUGGESTIONS: on a new line, followed by exactly 3 complete, natural replies that directly fit your question.\n4. Suggestions must be different from each other and must help the learner continue the current scenario.`;
+      try{
+        const res=await fetch(BACKEND_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({system_prompt:prompt,messages:roleplayHistory})});
+        const data=await res.json();
+        const parsed=parseAIResponseWithHints(data.reply||"How can I help you?","roleplay");
+        appendMessage("roleplayChatMessages","AI",parsed.speech); roleplayHistory.push({sender:"AI",text:parsed.speech});
+        // Fresh hints are rendered on EVERY AI turn, even if the backend forgets SUGGESTIONS:.
+        renderHints("roleplayHints",parsed.hints,hint=>sendRoleplayChat(hint));
+        speakText(parsed.speech);
+      }catch{ appendMessage("roleplayChatMessages","AI","Connection error. Please try again."); }
     }
 
-    // --- 10. TAB 4: Dedicated AI Call (Silent Hints & Persistent Mic Loop) ---
-    let callHistory = [];
-    let inCall = false;
-    let thinkingTimer = null;
-    let latestCallHints = [];
-
-    const CALL_PROMPT = `You are a friend chatting on an active phone call.
+    // --- 10. TAB 4: Dedicated AI Call ---
+    let callHistory=[]; let inCall=false; let callState="IDLE"; let thinkingTimer=null; let latestCallHints=[];
+    const CALL_PROMPT=`You are a friend chatting on an active phone call.
 RULES:
 1. Speak casually in 1-2 short spoken sentences.
-2. NO actions or descriptions in parentheses or asterisks.
-3. Crucial: End your response on a new line with 'SUGGESTIONS:' followed by 2-3 short, natural sentences the user could say back to you.`;
+2. No actions, descriptions, parentheses, or asterisks.
+3. ALWAYS end with SUGGESTIONS: on a new line followed by exactly 3 short, natural sentences the user could say back.`;
 
-    function toggleCallMode() {
-      inCall = !inCall;
-      const btn = document.getElementById("callToggleBtn");
-      const ring = document.getElementById("callAvatar");
-      const statusText = document.getElementById("callStatus");
+    function stopCallRecognition(){ if(rec){try{rec.abort();}catch(e){} } isRecActive=false; }
+    function clearCallTimer(){ if(thinkingTimer!==null){clearInterval(thinkingTimer);thinkingTimer=null;} }
 
-      clearTimeout(thinkingTimer);
-      document.getElementById("callTimerNotice").textContent = "";
-      document.getElementById("callHintsContainer").innerHTML = "";
-
-      if (inCall) {
-        btn.textContent = "End Call";
-        btn.style.background = "#dc2626";
-        ring.classList.add("active");
-
-        const greeting = "Hey, it's me! Did you call? How are you doing today?";
-        callHistory = [{ sender: "AI", text: greeting }];
-        statusText.textContent = greeting;
-        latestCallHints = [
-          "Hey! I'm doing well, just wanted to catch up.",
-          "I had a pretty busy day! What have you been up to?",
-          "Can you pick a fun topic for us to chat about?"
-        ];
-
-        // The AI speaks ONLY the greeting, never the suggestions
-        speakText(greeting, () => startCallListeningLoop());
-      } else {
-        btn.textContent = "📞 Start Call";
-        btn.style.background = "var(--accent)";
-        ring.classList.remove("active", "pulsing");
-        statusText.textContent = "Call ended.";
-        document.getElementById("callHintsContainer").innerHTML = "";
-        window.speechSynthesis.cancel();
-        if (rec) rec.abort();
+    function toggleCallMode(){
+      inCall=!inCall; const btn=document.getElementById("callToggleBtn"),ring=document.getElementById("callAvatar"),status=document.getElementById("callStatus");
+      clearCallTimer(); document.getElementById("callTimerNotice").textContent=""; document.getElementById("callHintsContainer").innerHTML="";
+      if(inCall){
+        btn.textContent="End Call"; btn.style.background="#dc2626"; ring.classList.add("active"); callState="AI_SPEAKING";
+        const greeting="Hey, it's me! How are you doing today?"; callHistory=[{sender:"AI",text:greeting}]; status.textContent=greeting;
+        latestCallHints=["I’m doing well, thanks. How about you?","I’m having a good day. What are you up to?","I wanted to catch up with you for a bit."];
+        // IMPORTANT: no microphone starts until TTS has completely finished.
+        speakText(greeting,()=>startCallListeningLoop());
+      }else{
+        btn.textContent="📞 Start Call"; btn.style.background="var(--accent)"; ring.classList.remove("active","pulsing"); status.textContent="Call ended.";
+        callState="IDLE"; clearCallTimer(); stopCallRecognition(); window.speechSynthesis.cancel();
       }
     }
 
-    function renderPassiveCallHints(hints) {
-      const box = document.getElementById("callHintsContainer");
-      box.innerHTML = "";
-      hints.forEach(h => {
-        const item = document.createElement("div");
-        item.className = "call-hint-passive";
-        item.textContent = `🗣️ Idea to speak: "${h}"`;
-        box.appendChild(item);
-      });
+    function renderPassiveCallHints(hints){
+      const box=document.getElementById("callHintsContainer"); box.innerHTML="";
+      (hints||[]).slice(0,3).forEach(h=>{const item=document.createElement("div");item.className="call-hint-passive";item.textContent=`🗣️ Idea to speak: "${h}"`;box.appendChild(item);});
     }
 
-    function startCallListeningLoop() {
-      if (!inCall) return;
-      const ring = document.getElementById("callAvatar");
-      ring.classList.add("pulsing");
-      document.getElementById("callStatus").textContent = "Listening... (Take your time, speak whenever ready)";
-      document.getElementById("callHintsContainer").innerHTML = "";
-
+    function startCallListeningLoop(){
+      if(!inCall) return;
+      callState="LISTENING"; const ring=document.getElementById("callAvatar"); ring.classList.add("pulsing");
+      document.getElementById("callStatus").textContent="Listening... Take your time and speak whenever you’re ready.";
+      document.getElementById("callHintsContainer").innerHTML="";
+      clearCallTimer(); let secondsLeft=10; document.getElementById("callTimerNotice").textContent=`Thinking time: ${secondsLeft}s`;
+      // Mic starts only in LISTENING state. The timer only reveals hints; it NEVER triggers AI speech.
       safeStartRec();
-
-      let secondsLeft = 10;
-      document.getElementById("callTimerNotice").textContent = `Thinking time: ${secondsLeft}s`;
-
-      clearInterval(thinkingTimer);
-      thinkingTimer = setInterval(() => {
-        if (!inCall) { clearInterval(thinkingTimer); return; }
-        secondsLeft -= 1;
-        if (secondsLeft > 0) {
-          document.getElementById("callTimerNotice").textContent = `Thinking time: ${secondsLeft}s`;
-        } else {
-          clearInterval(thinkingTimer);
-          document.getElementById("callTimerNotice").textContent = "💡 Ideas for what to say (read aloud whenever you're ready):";
-          renderPassiveCallHints(latestCallHints);
-        }
-      }, 1000);
+      thinkingTimer=setInterval(()=>{
+        if(!inCall||callState!=="LISTENING"){clearCallTimer();return;}
+        secondsLeft--;
+        if(secondsLeft>0) document.getElementById("callTimerNotice").textContent=`Thinking time: ${secondsLeft}s`;
+        else{clearCallTimer();document.getElementById("callTimerNotice").textContent="💡 Ideas for what to say (read aloud whenever you’re ready):";renderPassiveCallHints(latestCallHints);}
+      },1000);
     }
 
-    async function handleCallExchange(spokenText) {
-      if (!inCall) return;
-      clearTimeout(thinkingTimer);
-      document.getElementById("callTimerNotice").textContent = "";
-      document.getElementById("callHintsContainer").innerHTML = "";
-      document.getElementById("callAvatar").classList.remove("pulsing");
-
-      analyzeUserInput(spokenText);
-      callHistory.push({ sender: "You", text: spokenText });
-      document.getElementById("callStatus").textContent = "Thinking...";
-
-      try {
-        const res = await fetch(BACKEND_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ system_prompt: CALL_PROMPT, messages: callHistory })
-        });
-        const data = await res.json();
-        const { speech, hints } = parseAIResponseWithHints(data.reply || "Could you say that once more?");
-        latestCallHints = hints;
-
-        callHistory.push({ sender: "AI", text: speech });
-        document.getElementById("callStatus").textContent = speech;
-
-        speakText(speech, () => startCallListeningLoop());
-      } catch {
-        document.getElementById("callStatus").textContent = "Connection issue. Tap End Call.";
-      }
+    async function handleCallExchange(spokenText){
+      if(!inCall||callState!=="LISTENING") return;
+      callState="THINKING"; clearCallTimer(); stopCallRecognition();
+      document.getElementById("callTimerNotice").textContent=""; document.getElementById("callHintsContainer").innerHTML=""; document.getElementById("callAvatar").classList.remove("pulsing");
+      analyzeUserInput(spokenText); callHistory.push({sender:"You",text:spokenText}); document.getElementById("callStatus").textContent="Thinking...";
+      try{
+        const res=await fetch(BACKEND_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({system_prompt:CALL_PROMPT,messages:callHistory})});
+        const data=await res.json(); const parsed=parseAIResponseWithHints(data.reply||"Could you say that once more?","call"); latestCallHints=parsed.hints;
+        callHistory.push({sender:"AI",text:parsed.speech}); document.getElementById("callStatus").textContent=parsed.speech; callState="AI_SPEAKING";
+        // Suggestions stay silent and are only shown after the next 10-second thinking window.
+        speakText(parsed.speech,()=>startCallListeningLoop());
+      }catch{callState="LISTENING";document.getElementById("callStatus").textContent="Connection issue. You can try speaking again.";startCallListeningLoop();}
     }
 
-    // --- 11. Continuous Speech Recognition Engine ---
-    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-    let rec = SpeechRec ? new SpeechRec() : null;
-    let activeRecTarget = "journey";
-    let isRecActive = false;
-
-    if (rec) {
-      rec.continuous = false;
-      rec.interimResults = false;
-      rec.lang = "en-US";
-
-      rec.onstart = () => { isRecActive = true; };
-      rec.onend = () => {
-        isRecActive = false;
-        ["journeyMicBtn", "libraryMicBtn", "roleplayMicBtn"].forEach(id => {
-          const btn = document.getElementById(id);
-          if (btn) {
-            btn.classList.remove("recording");
-            btn.textContent = "🎤 Speak";
-          }
-        });
-        if (inCall) {
-          setTimeout(() => safeStartRec(), 200);
-        }
+    // --- 11. Speech Recognition Engine ---
+    const SpeechRec=window.SpeechRecognition||window.webkitSpeechRecognition;
+    let rec=SpeechRec?new SpeechRec():null; let activeRecTarget="journey"; let isRecActive=false;
+    if(rec){
+      rec.continuous=false; rec.interimResults=false; rec.lang="en-US";
+      rec.onstart=()=>{isRecActive=true;};
+      rec.onend=()=>{
+        isRecActive=false;
+        ["journeyMicBtn","libraryMicBtn","roleplayMicBtn"].forEach(id=>{const b=document.getElementById(id);if(b){b.classList.remove("recording");b.textContent="🎤 Speak";}});
+        // Browser recognition is single-shot. Restart ONLY while the call is genuinely waiting for the user.
+        if(inCall&&callState==="LISTENING") setTimeout(()=>safeStartRec(),200);
       };
-
-      rec.onerror = (e) => {
-        if (inCall && e.error !== "aborted") {
-          setTimeout(() => safeStartRec(), 500);
-        }
+      rec.onerror=e=>{
+        isRecActive=false;
+        if(inCall&&callState==="LISTENING"&&e.error!=="aborted") setTimeout(()=>safeStartRec(),500);
       };
-
-      rec.onresult = (e) => {
-        const transcript = e.results[0][0].transcript;
-        if (inCall) {
-          handleCallExchange(transcript);
-        } else if (activeRecTarget === "journey") {
-          document.getElementById("journeyInput").value = transcript;
-          sendJourneyChat();
-        } else if (activeRecTarget === "library") {
-          document.getElementById("libraryInput").value = transcript;
-          sendLibraryChat();
-        } else if (activeRecTarget === "roleplay") {
-          document.getElementById("roleplayInput").value = transcript;
-          sendRoleplayChat();
-        }
+      rec.onresult=e=>{
+        const transcript=e.results[0][0].transcript.trim(); if(!transcript) return;
+        if(inCall){ if(callState==="LISTENING") handleCallExchange(transcript); return; }
+        if(activeRecTarget==="journey"){document.getElementById("journeyInput").value=transcript;sendJourneyChat();}
+        else if(activeRecTarget==="library"){document.getElementById("libraryInput").value=transcript;sendLibraryChat();}
+        else if(activeRecTarget==="roleplay"){document.getElementById("roleplayInput").value=transcript;sendRoleplayChat();}
       };
     }
+    function safeStartRec(){ if(!rec||isRecActive) return; try{rec.start();}catch(e){} }
 
-    function safeStartRec() {
-      if (!rec || isRecActive) return;
-      try { rec.start(); } catch(e) {}
-    }
-
-    function toggleSpeechRec(target) {
-      activeRecTarget = target;
-      window.speechSynthesis.cancel();
-      const btn = document.getElementById(`${target}MicBtn`);
-      if (btn) {
-        btn.classList.add("recording");
-        btn.textContent = "🛑 Listening...";
-      }
+    function toggleSpeechRec(target){
+      activeRecTarget=target; window.speechSynthesis.cancel();
+      if(target==="call") return;
+      const btn=document.getElementById(`${target}MicBtn`); if(btn){btn.classList.add("recording");btn.textContent="🛑 Listening...";}
       safeStartRec();
     }
   </script>
